@@ -1,8 +1,16 @@
-# React + Vite
+# 🗺 서울시 실시간 도시데이터🗺
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+✔️처음에 로그인 없이 진행해주세요
+✔️처음 메인 페이지 핫플 가져오기(주소, 한산한 시간, 아코디언 진행 중)  
+✔️처음 메인 페이지 현재 위치 버튼/ 주변 문화 버튼 진행 
+✔️116개 모든 장소 마커 찍기 완료/ 마커 클릭 이벤트 완료
+✔️장소 마커 클릭 시 주변 문화 행사 마커 찍기 완료/ 마커 클릭 이벤트(좌표가 같을 경우 해결 진행 중)
 
-Currently, two official plugins are available:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+
+
+
+
+
+
+<br/>
