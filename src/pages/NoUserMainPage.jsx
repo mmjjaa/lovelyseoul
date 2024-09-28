@@ -40,7 +40,7 @@ const NoUserMainSubtitle = styled.p`
   padding: 0 1rem;
 `;
 
-export default function NoUserMainPage({ onMyPageClick }) {
+export default function NoUserMainPage() {
   const [showLoginModal, setShowLoginModal] = useState(false);
   const { placesData, isLoading } = UseGetPeopleData();
   const [hotPlaces, setHotPlaces] = useState([]);

@@ -1,6 +1,7 @@
 import styled from "styled-components";
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { ResponsiveBarCanvas } from "@nivo/bar";
+import UseGetData from "../hooks/useGetData";
 
 const StyledSpotList = styled.div`
   border: 1px solid #ccc;
@@ -50,6 +51,9 @@ const IconText = styled.p`
   margin-right: 1rem;
   img {
     margin-right: 0.5rem;
+  }
+  p {
+    margin-right: 1rem;
   }
 `;
 
@@ -137,11 +141,15 @@ export default function SpotList({ setShowLoginModal, isFavorited, place }) {
   const [isOpen, setIsOpen] = useState(false);
   const userInfo = JSON.parse(localStorage.getItem("userInfo"));
   const [isHeart, setIsHeart] = useState(isFavorited);
+  const { data } = UseGetData();
+  const [address, setAddress] = useState("");
 
+  //  자세히 보기(아코디언)
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
   };
 
+  // 찜하기 클릭 시
   const handleHeartClick = () => {
     if (!userInfo) {
       setShowLoginModal(true);
@@ -203,6 +211,34 @@ export default function SpotList({ setShowLoginModal, isFavorited, place }) {
       ),
     },
   ];
+  // 한산한 시간대 구하기
+  const quietTimeData = place.FCST_PPLTN.reduce((min, current) => {
+    return parseInt(current.FCST_PPLTN_MIN) < parseInt(min.FCST_PPLTN_MIN)
+      ? current
+      : min;
+  });
+
+  const quietTimeHour = new Date(quietTimeData.FCST_TIME).getHours();
+
+  // Kakao 지도 API로 좌표를 주소로 변환
+  const getAddress = useCallback((lat, lng) => {
+    const geocoder = new window.kakao.maps.services.Geocoder();
+    const coord = new window.kakao.maps.LatLng(lat, lng);
+
+    const callback = function (result, status) {
+      if (status === window.kakao.maps.services.Status.OK) {
+        setAddress(result[0].address.address_name);
+      }
+    };
+    geocoder.coord2Address(coord.getLng(), coord.getLat(), callback);
+  }, []);
+
+  useEffect(() => {
+    const matchedPlace = data.find((item) => item.name === place.AREA_NM);
+    if (matchedPlace) {
+      getAddress(matchedPlace.latitude, matchedPlace.longitude);
+    }
+  }, [data, place.AREA_NM, getAddress]);
 
   return (
     <StyledSpotList>
@@ -219,14 +255,15 @@ export default function SpotList({ setShowLoginModal, isFavorited, place }) {
         <ListContents>
           <h3>{place.AREA_NM}</h3>
           <IconText>
-            <img alt="" />
-            서울특별시 종로구 세종대로 172 (세종로)
+            <img src="/img/ListSpotMark.svg" />
+            {address}
           </IconText>
           <p>{place.AREA_CONGEST_MSG}</p>
           <IconText>
-            <img src="/img/woman.svg" alt="Woman Icon" />{" "}
-            {place.FEMALE_PPLTN_RATE}
-            <img src="/img/man.svg" alt="Man Icon" /> {place.MALE_PPLTN_RATE}
+            <img src="/img/woman.jpg" alt="Woman Icon" />
+            <p>{place.FEMALE_PPLTN_RATE}</p>
+            <img src="/img/man.jpg" alt="Man Icon" />
+            <p>{place.MALE_PPLTN_RATE}</p>
           </IconText>
           <BtnCon>
             <CongestionBtn>{place.AREA_CONGEST_LVL}</CongestionBtn>
@@ -241,7 +278,7 @@ export default function SpotList({ setShowLoginModal, isFavorited, place }) {
       </ListCon>
       <Details isOpen={isOpen}>
         <QuietTime>
-          <strong>09</strong>시에 가장 한적해요!
+          <strong>{quietTimeHour}</strong>시에 가장 한적해요!
         </QuietTime>
 
         <div style={{ height: "100px", marginTop: "1rem" }}>
