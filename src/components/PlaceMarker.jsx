@@ -1,30 +1,50 @@
 import { MapMarker } from "react-kakao-maps-sdk";
 import styled from "styled-components";
+import usePlaceMarkerStore from "../store/clickPlaceMarkerStore";
+import { useNavigate } from "react-router-dom";
 
 const InfoWindow = styled.div`
   background-color: white;
   padding: 10px;
   border-radius: 5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   z-index: 100;
-  width: 330px;
+  width: 290px;
+  cursor: pointer;
+
+  button {
+    cursor: pointer;
+    position: absolute;
+    color: #999;
+    font-size: 30px;
+    right: 0px;
+    top: 0px;
+  }
 `;
 
 const InfoWindowContents = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
+
   img {
-    width: 280px;
+    width: 250px;
     height: 200px;
   }
-
   p {
     font-weight: bold;
   }
 `;
 
-const PlaceMarker = ({ id, position, name, isOpen, onClick }) => {
+export default function PlaceMarker({ id, position, name, isOpen, onClick }) {
+  const { setClickedMarkerName } = usePlaceMarkerStore();
+  const navigate = useNavigate();
+
+  /*마커 클릭했을 때 나오는 인포윈도우 클릭 시*/
+  const handleInfoWindowClick = () => {
+    setClickedMarkerName(name);
+    navigate("/");
+  };
+
   return (
     <MapMarker
       key={id}
@@ -40,21 +60,10 @@ const PlaceMarker = ({ id, position, name, isOpen, onClick }) => {
       }}
     >
       {isOpen && (
-        <InfoWindow>
+        <InfoWindow className="box-shadow" onClick={handleInfoWindowClick}>
+          {console.log("InfoWindowContents name:", name)}
           <div>
-            <img
-              alt="close"
-              width="14"
-              height="13"
-              src="https://t1.daumcdn.net/localimg/localimages/07/mapjsapi/2x/bt_close.gif"
-              style={{
-                position: "absolute",
-                right: "5px",
-                top: "5px",
-                cursor: "pointer",
-              }}
-              onClick={onClick}
-            />
+            <button onClick={onClick}>x</button>
             <InfoWindowContents>
               <img
                 src={`https://data.seoul.go.kr/SeoulRtd/images/hotspot/${name}.jpg`}
@@ -67,6 +76,4 @@ const PlaceMarker = ({ id, position, name, isOpen, onClick }) => {
       )}
     </MapMarker>
   );
-};
-
-export default PlaceMarker;
+}

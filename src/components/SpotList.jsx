@@ -1,11 +1,12 @@
 import styled from "styled-components";
 import { useState, useEffect, useCallback } from "react";
 import { ResponsiveBarCanvas } from "@nivo/bar";
-import UseGetData from "../hooks/useGetData";
+import UseGetData from "../hooks/useFetchData";
+import useSpotListStore from "../store/spotListStore";
+import useUserStore from "../store/userStore";
 
 const StyledSpotList = styled.div`
   border: 1px solid #ccc;
-  border-radius: 20px;
   padding: 1rem;
   max-width: 700px;
   margin: 1rem;
@@ -15,14 +16,13 @@ const ListCon = styled.div`
   display: flex;
   position: relative;
   padding: 1rem;
-  border-radius: 20px;
+  cursor: pointer;
 `;
 
 const SpotImg = styled.img`
   width: 150px;
   height: auto;
   object-fit: cover;
-  border-radius: 10px;
 `;
 
 const HeartImg = styled.img`
@@ -35,11 +35,7 @@ const HeartImg = styled.img`
 const ListContents = styled.div`
   flex: 1;
   padding-left: 1rem;
-  h3 {
-    font-size: 24px;
-    font-weight: bold;
-    font-family: "Do Hyeon", sans-serif;
-  }
+
   p {
     margin: 0.5rem 0;
   }
@@ -66,52 +62,36 @@ const BtnCon = styled.div`
 const CongestionBtn = styled.button`
   background-color: #ff4d4f;
   color: white;
-  border: none;
-  border-radius: 20px;
   padding: 0.5rem 1rem;
-  font-size: 14px;
 `;
 const PopularBtn = styled.button`
   background-color: ${({ ageGroup }) => ageGroup || "#ffa940"};
   color: white;
-  border: none;
-  border-radius: 20px;
   padding: 0.5rem 1rem;
-  font-size: 14px;
 `;
 
 const ArrowBtn = styled.button`
-  background: inherit;
-  border: none;
   cursor: pointer;
   position: absolute;
-  bottom: 0;
+  margin: 1rem 0;
   left: 50%;
   transform: translateX(-50%);
 `;
 
 const Details = styled.div`
   padding: 1rem;
-
   max-height: ${({ isOpen }) => (isOpen ? "500px" : "0")};
   overflow: hidden;
   transition: max-height 0.4s ease-in-out;
   opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
   transition: opacity 0.4s ease, max-height 0.4s ease-in-out;
   text-align: center;
-  font-size: 24px;
-  font-weight: bold;
 `;
 
 const QuietTime = styled.div`
   padding: 1rem;
-  font-size: 28px;
-  font-weight: bold;
   background-color: #eee;
-  border-radius: 20px;
-  strong {
-    color: #0087ca;
-  }
+  margin-top: 1rem;
 `;
 
 const AgeBar = styled.div`
@@ -128,54 +108,56 @@ const AgeItem = styled.div`
     width: 10px;
     height: 10px;
     background-color: ${({ color }) => color};
-    border-radius: 50%;
     margin-right: 2px;
   }
   p {
-    font-size: 14px;
     color: #ccc;
   }
 `;
-
-export default function SpotList({ setShowLoginModal, isFavorited, place }) {
-  const [isOpen, setIsOpen] = useState(false);
-  const userInfo = JSON.parse(localStorage.getItem("userInfo"));
-  const [isHeart, setIsHeart] = useState(isFavorited);
+const CustomTooltip = styled.div`
+  background: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 14px;
+`;
+export default function SpotList({ place }) {
+  const { accordionStates, setAccordionState } = useSpotListStore();
+  const {
+    isLoggedIn,
+    openLoginModal,
+    favoriteSpots,
+    addFavorite,
+    removeFavorite,
+  } = useUserStore();
+  const isFavorited = favoriteSpots.some(
+    (spot) => spot.AREA_NM === place.AREA_NM
+  );
   const { data } = UseGetData();
   const [address, setAddress] = useState("");
+  const isOpen = accordionStates[place.AREA_NM] || false;
 
-  //  자세히 보기(아코디언)
+  /*  자세히 보기(아코디언) */
   const toggleAccordion = () => {
-    setIsOpen(!isOpen);
+    setAccordionState(place.AREA_NM, !isOpen);
   };
 
-  // 찜하기 클릭 시
-  const handleHeartClick = () => {
-    if (!userInfo) {
-      setShowLoginModal(true);
+  /*찜하기(하트) 클릭 시*/
+  const handleHeartClick = (e) => {
+    e.stopPropagation();
+    if (!isLoggedIn) {
+      openLoginModal();
       return;
     }
-
-    const favoriteSpots =
-      JSON.parse(localStorage.getItem("favoriteSpots")) || [];
-    const currentSpot = {
-      name: place.AREA_NM,
-    };
-
     if (isFavorited) {
-      const updatedFavorites = favoriteSpots.filter(
-        (spot) => spot.name !== currentSpot.name
-      );
-      localStorage.setItem("favoriteSpots", JSON.stringify(updatedFavorites));
-      setIsHeart(false);
+      removeFavorite(place);
       alert("찜한 목록에서 제거되었습니다.");
     } else {
-      favoriteSpots.push(currentSpot);
-      localStorage.setItem("favoriteSpots", JSON.stringify(favoriteSpots));
-      setIsHeart(true);
+      addFavorite(place);
       alert("찜한 목록에 추가되었습니다.");
     }
   };
+
   const ageGroups = {
     "10대": { rate: place.PPLTN_RATE_10, color: "#FFAFA3" },
     "20대": { rate: place.PPLTN_RATE_20, color: "#FFC470" },
@@ -185,7 +167,7 @@ export default function SpotList({ setShowLoginModal, isFavorited, place }) {
     "60대": { rate: place.PPLTN_RATE_60, color: "#D9B8FF" },
   };
 
-  // 나이대별 데이터에서 가장 높은 비율
+  /* 나이대별 데이터에서 가장 높은 비율 찾기 */
   const popularAgeGroup = Object.keys(ageGroups).reduce(
     (maxGroup, currentGroup) => {
       return parseFloat(ageGroups[currentGroup].rate) >
@@ -196,22 +178,19 @@ export default function SpotList({ setShowLoginModal, isFavorited, place }) {
     "10대"
   );
   const popularAgeColor = ageGroups[popularAgeGroup].color;
-  const totalRate = Object.values(ageGroups).reduce(
-    (total, group) => total + parseFloat(group.rate),
-    0
-  );
+
   const ageData = [
     {
-      ageGroup: "연령대 비율",
+      ageGroup: "연령대별 비율",
       ...Object.fromEntries(
         Object.keys(ageGroups).map((ageGroup) => [
           ageGroup,
-          (ageGroups[ageGroup].rate / totalRate) * 100,
+          ageGroups[ageGroup].rate,
         ])
       ),
     },
   ];
-  // 한산한 시간대 구하기
+  /* 한산한 시간대 구하기 */
   const quietTimeData = place.FCST_PPLTN.reduce((min, current) => {
     return parseInt(current.FCST_PPLTN_MIN) < parseInt(min.FCST_PPLTN_MIN)
       ? current
@@ -220,7 +199,7 @@ export default function SpotList({ setShowLoginModal, isFavorited, place }) {
 
   const quietTimeHour = new Date(quietTimeData.FCST_TIME).getHours();
 
-  // Kakao 지도 API로 좌표를 주소로 변환
+  /* Kakao 지도 API로 좌표를 주소로 변환 */
   const getAddress = useCallback((lat, lng) => {
     const geocoder = new window.kakao.maps.services.Geocoder();
     const coord = new window.kakao.maps.LatLng(lat, lng);
@@ -241,14 +220,15 @@ export default function SpotList({ setShowLoginModal, isFavorited, place }) {
   }, [data, place.AREA_NM, getAddress]);
 
   return (
-    <StyledSpotList>
-      <ListCon>
+    <StyledSpotList className="border-radius-default">
+      <ListCon onClick={toggleAccordion}>
         <SpotImg
           src={`https://data.seoul.go.kr/SeoulRtd/images/hotspot/${place.AREA_NM}.jpg`}
           alt="Spot Image"
+          className="border-radius-thin"
         />
         <HeartImg
-          src={isHeart ? "/img/RedHeart.svg" : "/img/ListHeart.svg"}
+          src={isFavorited ? "/img/RedHeart.svg" : "/img/ListHeart.svg"}
           alt="Heart Icon"
           onClick={handleHeartClick}
         />
@@ -266,52 +246,61 @@ export default function SpotList({ setShowLoginModal, isFavorited, place }) {
             <p>{place.MALE_PPLTN_RATE}</p>
           </IconText>
           <BtnCon>
-            <CongestionBtn>{place.AREA_CONGEST_LVL}</CongestionBtn>
-            <PopularBtn ageGroup={popularAgeColor}>
+            <CongestionBtn className="border-radius-default font-size-small ">
+              {place.AREA_CONGEST_LVL}
+            </CongestionBtn>
+            <PopularBtn
+              className="border-radius-default font-size-small"
+              ageGroup={popularAgeColor}
+            >
               {popularAgeGroup}한테 인기 많아요
             </PopularBtn>
           </BtnCon>
-          <ArrowBtn onClick={toggleAccordion}>
-            <img src="/img/DownArrow.svg" alt="Toggle Details" />
+          <ArrowBtn>
+            <img src={isOpen ? "/img/UpArrow.svg" : "/img/DownArrow.svg"} />
           </ArrowBtn>
         </ListContents>
       </ListCon>
       <Details isOpen={isOpen}>
-        <QuietTime>
-          <strong>{quietTimeHour}</strong>시에 가장 한적해요!
+        <QuietTime className="border-radius-default">
+          <h2>
+            <strong>{quietTimeHour}</strong>시에 가장 한적해요!
+          </h2>
         </QuietTime>
 
         <div style={{ height: "100px", marginTop: "1rem" }}>
+          <p>
+            <strong>연령대별 비율</strong>
+          </p>
           <ResponsiveBarCanvas
             data={ageData}
             keys={Object.keys(ageGroups)}
             indexBy="ageGroup"
-            margin={{ top: 20, right: 30, bottom: 50, left: 60 }}
+            margin={{ top: 20, bottom: 40 }}
             padding={0.3}
             layout="horizontal"
             colors={(bar) => ageGroups[bar.id].color}
             borderWidth={0}
-            enableLabel={false}
-            labelTextColor={{ from: "color", modifiers: [["darker", 1.6]] }}
-            labelPosition="right"
-            labelOffset={12}
-            axisBottom={{
-              tickSize: 5,
-              tickPadding: 5,
-              tickRotation: 0,
-              legendPosition: "middle",
-              legendOffset: 36,
-            }}
+            enableLabel={true}
+            labelTextColor="#000"
+            label={(bar) => `${Math.round(bar.value)}%`}
+            labelSkipWidth={0}
+            labelSkipHeight={0}
+            axisBottom={null}
             axisLeft={null}
             enableGridY={false}
-            enableGridX={false}
+            tooltip={(bar) => (
+              <CustomTooltip>
+                <strong>{bar.id}</strong>: {Math.round(bar.value)}%
+              </CustomTooltip>
+            )}
           />
         </div>
 
         <AgeBar>
           {Object.keys(ageGroups).map((ageGroup) => (
             <AgeItem key={ageGroup} color={ageGroups[ageGroup].color}>
-              <span></span> <p>{ageGroup}</p>
+              <span className="border-radius-circle"></span> <p>{ageGroup}</p>
             </AgeItem>
           ))}
         </AgeBar>

@@ -1,15 +1,16 @@
 import styled from "styled-components";
 import { useState, useEffect } from "react";
 import { Map } from "react-kakao-maps-sdk";
-import UseGetData from "../hooks/useGetData";
+import UseFetchData from "../hooks/useFetchData";
 import PlaceMarker from "../components/PlaceMarker";
 import EventMarker from "../components/EventMarker";
+import useFetchEventData from "../hooks/useFetchEventData";
+import BounceLoader from "react-spinners/BounceLoader";
 
 const StyledKakaoMap = styled.div`
   width: 60%;
   height: 100vh;
   position: relative;
-  border-radius: 15px;
   overflow: hidden;
 `;
 
@@ -23,21 +24,17 @@ const ZoomControls = styled.div`
 `;
 
 const ZoomButton = styled.button`
-  border: none;
-  outline: none;
   margin: 5px;
   padding: 10px;
-  background-color: inherit;
   cursor: pointer;
 `;
 
 export default function KakaoMap() {
   const [level, setLevel] = useState(9);
-  const { data, isLoading } = UseGetData();
+  const { data, isLoading } = UseFetchData();
   const [openPlaceInfoWindow, setOpenPlaceInfoWindow] = useState(null);
   const [openEventInfoWindow, setOpenEventInfoWindow] = useState(null);
-  const [eventMarkers, setEventMarkers] = useState([]);
-  const API_KEY = import.meta.env.VITE_APP_SEOUL_KEY;
+  const { eventMarkers, fetchEventData, error } = useFetchEventData();
 
   useEffect(() => {
     console.log(data);
@@ -51,49 +48,24 @@ export default function KakaoMap() {
     setLevel((prevLevel) => Math.min(prevLevel + 1, 14));
   };
 
-  const handleMarkerClick = async (latitude, longitude, name) => {
-    const key = `${latitude},${longitude}`;
-    setOpenPlaceInfoWindow((prev) => (prev === key ? null : key));
+  /*장소 마커 인포윈도우 열고 닫기*/
+  const handleMarkerClick = async (id, name) => {
+    setOpenPlaceInfoWindow((prev) => (prev === id ? null : id));
+
+    console.log(name);
 
     if (openEventInfoWindow) return;
-
-    try {
-      const res = await fetch(
-        `http://openapi.seoul.go.kr:8088/${API_KEY}/json/citydata/1/5/${name}`
-      );
-      const result = await res.json();
-      const eventData = result.CITYDATA.EVENT_STTS;
-
-      if (eventData && eventData.length > 0) {
-        setEventMarkers(
-          eventData.map((event) => {
-            const eventX = event.EVENT_X;
-            const eventY = event.EVENT_Y;
-            const eventName = event.EVENT_NM;
-            const thumbnail = event.THUMBNAIL;
-
-            return {
-              lat: eventY,
-              lng: eventX,
-              eventName,
-              thumbnail,
-              key: `${eventY},${eventX}`,
-            };
-          })
-        );
-      } else {
-        setEventMarkers([]);
-      }
-    } catch (error) {
-      console.error("문화 행사 데이터를 가져오는 중 오류 발생:", error);
-    }
+    await fetchEventData(name);
   };
-  if (isLoading) {
-    return <div>로딩 중...</div>;
-  }
 
+  if (isLoading) {
+    return <BounceLoader color="#0087CA" size={60} />;
+  }
+  if (error) {
+    return <div>데이터 로딩 중 오류 발생: {error.message}</div>;
+  }
   return (
-    <StyledKakaoMap>
+    <StyledKakaoMap className="border-radius-default">
       <Map
         id={`map`}
         center={{
@@ -107,35 +79,39 @@ export default function KakaoMap() {
         level={level}
       >
         {data.map((placeData) => {
-          const { id, latitude, longitude, name } = placeData;
+          const { latitude, longitude, name } = placeData;
           const markerPosition = {
             lat: parseFloat(latitude),
             lng: parseFloat(longitude),
           };
-
+          const key = `${latitude},${longitude}`;
           return (
             <PlaceMarker
-              key={id}
-              id={id}
+              key={key}
+              id={key}
               position={markerPosition}
               name={name}
-              isOpen={openPlaceInfoWindow === `${latitude},${longitude}`}
-              onClick={() => handleMarkerClick(latitude, longitude, name)}
+              isOpen={openPlaceInfoWindow === key}
+              onClick={() => handleMarkerClick(key, name)}
             />
           );
         })}
         {eventMarkers.map((marker) => {
           console.log("Marker Data:", marker);
+          const eventKey = `${marker.eventName}-${marker.lat},${marker.lng}`;
           return (
             <EventMarker
-              key={marker.key}
+              key={eventKey}
               position={{ lat: marker.lat, lng: marker.lng }}
               name={marker.eventName}
               thumbnail={marker.thumbnail}
-              isOpen={openEventInfoWindow === marker.key}
+              place={marker.place}
+              period={marker.period}
+              url={marker.url}
+              isOpen={openEventInfoWindow === eventKey}
               onClick={() => {
                 setOpenEventInfoWindow((prev) =>
-                  prev === marker.key ? null : marker.key
+                  prev === eventKey ? null : eventKey
                 );
               }}
             />

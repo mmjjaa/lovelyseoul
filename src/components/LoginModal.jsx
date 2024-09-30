@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useState } from "react";
+import useUserStore from "../store/userStore";
 
 const ModalOverlay = styled.div`
   position: fixed;
@@ -21,36 +22,24 @@ const LoginCon = styled.div`
   text-align: center;
   margin: 1rem;
   background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 20px;
   z-index: 10;
 `;
 
 const DeleteBtn = styled.button`
-  border: none;
-  outline: none;
-  background-color: transparent;
   position: absolute;
   right: 1rem;
   color: #666;
-  font-size: 35px;
   cursor: pointer;
 `;
 
 const Title = styled.div`
   margin: 3rem;
-  h3 {
-    font-size: 26px;
-  }
   p {
-    font-size: 16px;
     color: #666;
   }
 `;
 
 const SaveBtn = styled.button`
-  border: none;
-  outline: none;
   background-color: rgba(0, 135, 202, 0.8);
   border-radius: 20px;
   color: white;
@@ -71,71 +60,74 @@ const Form = styled.form`
     border: 1px solid #ccc;
     border-radius: 5px;
   }
+  select {
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
 `;
 
-export default function LoginModal({ onClose, onContinue, setShowLoginModal }) {
-  const [isVisible, setIsVisible] = useState(true);
+export default function LoginModal() {
+  const { login, closeLoginModal } = useUserStore();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [error, setError] = useState("");
 
   const handleClose = () => {
-    setIsVisible(false);
-    setShowLoginModal(false);
-    onClose();
+    closeLoginModal();
   };
-
   const handleSave = (e) => {
     e.preventDefault();
     const nameRegex = /^[가-힣]{2,}$/;
-    const ageRegex = /^(?:[1-7]?[0-9]|0)$/;
 
     if (!nameRegex.test(name)) {
       setError("이름을 올바르게 입력해주세요.");
       return;
     }
 
-    if (!ageRegex.test(age)) {
-      setError("나이를 올바르게 입력해주세요.");
-      return;
-    }
-
-    localStorage.setItem("userInfo", JSON.stringify({ name, age }));
+    const userInfo = { name, age };
+    login(userInfo);
     setError("");
-    onContinue();
+    handleClose();
   };
 
   return (
-    isVisible && (
-      <ModalOverlay>
-        <LoginCon>
-          <DeleteBtn onClick={handleClose}>x</DeleteBtn>
-          <Title>
-            <h3>로그인</h3>
-            <p>간단한 정보를 입력하시면 </p>
-            <p> 좋은 정보를 추천해드릴게요!</p>
-          </Title>
+    <ModalOverlay>
+      <LoginCon className="border-radius-default">
+        <DeleteBtn className="font-size-max-extra-large " onClick={handleClose}>
+          x
+        </DeleteBtn>
+        <Title>
+          <h3>로그인</h3>
+          <p>간단한 정보를 입력하시면 </p>
+          <p>좋은 정보를 추천해드릴게요!</p>
+        </Title>
 
-          <Form onSubmit={handleSave}>
-            <input
-              name="name"
-              type="text"
-              placeholder="이름을 입력해주세요"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-            />
-            <input
-              name="age"
-              type="text"
-              placeholder="나이를 입력해주세요"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-            />
-            {error && <p style={{ color: "red" }}>{error}</p>}
-            <SaveBtn type="submit">Continue</SaveBtn>
-          </Form>
-        </LoginCon>
-      </ModalOverlay>
-    )
+        <Form onSubmit={handleSave}>
+          <input
+            name="name"
+            type="text"
+            placeholder="이름을 입력해주세요"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+          <select
+            name="age"
+            value={age}
+            onChange={(e) => setAge(e.target.value)}
+          >
+            <option value="">나이를 선택해주세요</option>
+            <option value="10대">10대</option>
+            <option value="20대">20대</option>
+            <option value="30대">30대</option>
+            <option value="40대">40대</option>
+            <option value="50대">50대</option>
+            <option value="60대">60대</option>
+          </select>
+          {error && <p style={{ color: "red" }}>{error}</p>}
+          <SaveBtn type="submit">로그인</SaveBtn>
+        </Form>
+      </LoginCon>
+    </ModalOverlay>
   );
 }

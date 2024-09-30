@@ -3,11 +3,20 @@ import styled from "styled-components";
 
 const InfoWindow = styled.div`
   background-color: white;
+  border: none;
   padding: 10px;
   border-radius: 5px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   z-index: 100;
   width: 330px;
+  cursor: pointer;
+  button {
+    cursor: pointer;
+    position: absolute;
+    color: #999;
+    font-size: 40px;
+    right: 0px;
+    top: 0px;
+  }
 `;
 
 const InfoWindowContents = styled.div`
@@ -18,7 +27,6 @@ const InfoWindowContents = styled.div`
     width: 280px;
     height: 200px;
   }
-
   p {
     font-weight: bold;
   }
@@ -30,8 +38,9 @@ export default function EventMarker({
   thumbnail,
   isOpen,
   onClick,
+
+  url,
 }) {
-  console.log(position, name, thumbnail);
   return (
     <MapMarker
       position={position}
@@ -46,21 +55,21 @@ export default function EventMarker({
       }}
     >
       {isOpen && (
-        <InfoWindow>
-          <div style={{ position: "relative" }}>
-            <img
-              alt="close"
-              width="14"
-              height="13"
-              src="https://t1.daumcdn.net/localimg/localimages/07/mapjsapi/2x/bt_close.gif"
-              style={{
-                position: "absolute",
-                right: "5px",
-                top: "5px",
-                cursor: "pointer",
+        <InfoWindow
+          className="box-shadow"
+          onClick={() => {
+            window.open(url);
+          }}
+        >
+          <div>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onClick(e);
               }}
-              onClick={onClick}
-            />
+            >
+              x
+            </button>
             <InfoWindowContents>
               <img src={thumbnail} alt={name} />
               <p>{name}</p>
