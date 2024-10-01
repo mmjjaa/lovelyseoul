@@ -28,12 +28,12 @@ const BtnCon = styled.div`
   padding: 1rem;
   gap: 1rem;
 `;
-const CulturalEventsTitle = styled.h2`
+const EventsText = styled.h2`
   padding: 0 1rem;
 `;
-const MCulturalEventsSubtitle = styled.p`
-  padding: 0 1rem;
-`;
+const EventsTitle = styled(EventsText).attrs({ as: "h2" })``;
+const EventsSubtitle = styled(EventsText).attrs({ as: "p" })``;
+
 const NoEventMessage = styled.div`
   text-align: center;
   padding-top: 5rem;
@@ -79,13 +79,11 @@ export default function CulturalEventsPage() {
   return (
     <Main>
       <SpotListContainer>
-        <CulturalEventsTitle>
+        <EventsTitle>
           <strong>{spotName}</strong>
           {postposition} 지금!
-        </CulturalEventsTitle>
-        <MCulturalEventsSubtitle>
-          주변 문화 행사를 확인해보세요!
-        </MCulturalEventsSubtitle>
+        </EventsTitle>
+        <EventsSubtitle>주변 문화 행사를 확인해보세요!</EventsSubtitle>
 
         <BtnCon>
           <Link to="/">

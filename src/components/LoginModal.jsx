@@ -29,7 +29,6 @@ const DeleteBtn = styled.button`
   position: absolute;
   right: 1rem;
   color: #666;
-  cursor: pointer;
 `;
 
 const Title = styled.div`
@@ -41,10 +40,8 @@ const Title = styled.div`
 
 const SaveBtn = styled.button`
   background-color: rgba(0, 135, 202, 0.8);
-  border-radius: 20px;
   color: white;
   height: 50px;
-  cursor: pointer;
   &:hover {
     background-color: rgba(0, 135, 202, 1);
   }
@@ -125,7 +122,9 @@ export default function LoginModal() {
             <option value="60대">60대</option>
           </select>
           {error && <p style={{ color: "red" }}>{error}</p>}
-          <SaveBtn type="submit">로그인</SaveBtn>
+          <SaveBtn className="border-radius-default" type="submit">
+            로그인
+          </SaveBtn>
         </Form>
       </LoginCon>
     </ModalOverlay>

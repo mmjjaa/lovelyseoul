@@ -12,7 +12,6 @@ const InfoWindow = styled.div`
   cursor: pointer;
 
   button {
-    cursor: pointer;
     position: absolute;
     color: #999;
     font-size: 30px;
@@ -25,13 +24,9 @@ const InfoWindowContents = styled.div`
   align-items: center;
   justify-content: center;
   text-align: center;
-
   img {
     width: 250px;
     height: 200px;
-  }
-  p {
-    font-weight: bold;
   }
 `;
 
@@ -68,8 +63,9 @@ export default function PlaceMarker({ id, position, name, isOpen, onClick }) {
               <img
                 src={`https://data.seoul.go.kr/SeoulRtd/images/hotspot/${name}.jpg`}
                 alt=""
+                className="border-radius-thin"
               />
-              <p>{name}</p>
+              <p className="font-weight-bold">{name}</p>
             </InfoWindowContents>
           </div>
         </InfoWindow>

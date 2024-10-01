@@ -6,7 +6,7 @@ import CulturalEventsBtn from "../components/CulturalEventsBtn";
 import { Link } from "react-router-dom";
 import useUserStore from "../store/userStore";
 import UseFetchPeopleData from "../hooks/useFetchPeopleData";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import useSpotListStore from "../store/spotListStore";
 import usePlaceMarkerStore from "../store/clickPlaceMarkerStore";
 import BounceLoader from "react-spinners/BounceLoader";
@@ -25,17 +25,26 @@ const SpotListContainer = styled.div`
   max-width: 40%;
   overflow-y: auto;
 `;
+
+const TitleContainer = styled.div`
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 10;
+  padding: 1rem;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+`;
 const BtnCon = styled.div`
   display: flex;
   padding: 1rem;
   gap: 1rem;
 `;
-const UserMainTitle = styled.h2`
+
+const UserMainText = styled.div`
   padding: 0 1rem;
 `;
-const UserMainSubtitle = styled.p`
-  padding: 0 1rem;
-`;
+const UserMainTitle = styled(UserMainText).attrs({ as: "h2" })``;
+const UserMainSubtitle = styled(UserMainText).attrs({ as: "p" })``;
 
 const LoaderContainer = styled.div`
   display: flex;
@@ -50,7 +59,6 @@ export default function UserMain() {
   const [hotPlaces, setHotPlaces] = useState([]);
   const { clickedMarkerName } = usePlaceMarkerStore();
   const { accordionStates, setAccordionState } = useSpotListStore();
-
   const openSpotNames = Object.keys(accordionStates).filter(
     (key) => accordionStates[key]
   );
@@ -58,12 +66,15 @@ export default function UserMain() {
   const isOpen = openSpotNames.length > 0;
   const postposition = checkKorean(spotName);
 
+  const selectedPlace = placesData.find(
+    (place) => place[0]?.AREA_NM === clickedMarkerName
+  );
+
+  const spotListContainerRef = useRef(null);
+
   /* 인기 많은 곳 가져오기 */
   useEffect(() => {
-    if (!isLoading) {
-      console.log("placesData-------:", placesData);
-
-      /* 로그인된 유저 나이대 비율 상위 10개 */
+    if (!isLoading && placesData.length) {
       const top10Places = placesData
         .sort(
           (a, b) =>
@@ -74,75 +85,72 @@ export default function UserMain() {
 
       setHotPlaces(top10Places);
     }
-  }, [isLoading, placesData, userInfo.age]);
+  }, [placesData, isLoading, userInfo.age]);
 
   /* 선택된 마커와 일치하는 장소 찾기 */
   useEffect(() => {
-    if (clickedMarkerName) {
-      const selectedPlace = placesData.find(
-        (place) => place[0].AREA_NM === clickedMarkerName
-      );
+    if (clickedMarkerName && selectedPlace) {
+      setAccordionState(clickedMarkerName, true);
+      Object.keys(accordionStates).forEach((key) => {
+        if (key !== clickedMarkerName) {
+          setAccordionState(key, false);
+        }
+      });
+    }
+  }, [clickedMarkerName, placesData, setAccordionState, selectedPlace]);
 
-      if (selectedPlace) {
-        setAccordionState(clickedMarkerName, true);
-        Object.keys(accordionStates).forEach((key) => {
-          if (key !== clickedMarkerName) {
-            setAccordionState(key, false);
-          }
-        });
+  /* 선택된 장소 있을 때 첫 번째 리스트로 스크롤 */
+  useEffect(() => {
+    if (spotListContainerRef.current && hotPlaces.length > 0) {
+      spotListContainerRef.current.scrollTop = 0;
+      if (selectedPlace && selectedPlace.length > 0) {
+        setAccordionState(selectedPlace[0].AREA_NM, true);
       }
     }
-  }, [clickedMarkerName, placesData, setAccordionState]);
+  }, [selectedPlace, hotPlaces, setAccordionState]);
 
-  const selectedPlace = placesData.find(
-    (place) => place[0].AREA_NM === clickedMarkerName
-  );
-
-  useEffect(() => {
-    if (selectedPlace) {
-      setAccordionState(selectedPlace[0].AREA_NM, true);
-    }
-  }, [selectedPlace, setAccordionState]);
   return (
     <Main>
-      <SpotListContainer>
+      <SpotListContainer ref={spotListContainerRef}>
         {isLoading ? (
           <LoaderContainer>
             <BounceLoader color="#0087CA" loading={isLoading} size={60} />
           </LoaderContainer>
         ) : (
           <>
-            {isOpen ? (
-              <>
-                <UserMainTitle>
-                  <strong>{spotName}</strong>
-                  {postposition} 지금!
-                </UserMainTitle>
-                <UserMainSubtitle>
-                  가장 한산한 시간대를 확인해보세요!
-                </UserMainSubtitle>
-                <BtnCon>
-                  <Link>
-                    <CurrentLocationBtn />
-                  </Link>
-                  <Link to="/culturaleventspage">
-                    <CulturalEventsBtn />
-                  </Link>
-                </BtnCon>
-              </>
-            ) : (
-              <>
-                <UserMainTitle>
-                  {userInfo.name}님! 현재 {userInfo.age}에게
-                  <strong> 인기가 많은 </strong>
-                  곳이에요!
-                </UserMainTitle>
-                <UserMainSubtitle>
-                  저희가 한눈에 보실 수 있도록 모아봤어요!
-                </UserMainSubtitle>
-              </>
-            )}
-            {selectedPlace && (
+            <TitleContainer>
+              {isOpen ? (
+                <>
+                  <UserMainTitle>
+                    <strong>{spotName}</strong>
+                    {postposition} 지금!
+                  </UserMainTitle>
+                  <UserMainSubtitle>
+                    가장 한산한 시간대를 확인해보세요!
+                  </UserMainSubtitle>
+                  <BtnCon>
+                    <Link>
+                      <CurrentLocationBtn />
+                    </Link>
+                    <Link to="/culturaleventspage">
+                      <CulturalEventsBtn />
+                    </Link>
+                  </BtnCon>
+                </>
+              ) : (
+                <>
+                  <UserMainTitle>
+                    {userInfo.name}님! 현재 {userInfo.age}에게
+                    <strong> 인기가 많은 </strong>
+                    곳이에요!
+                  </UserMainTitle>
+                  <UserMainSubtitle>
+                    저희가 한눈에 보실 수 있도록 모아봤어요!
+                  </UserMainSubtitle>
+                </>
+              )}
+            </TitleContainer>
+            {selectedPlace && selectedPlace[0] && (
               <SpotList
                 place={selectedPlace[0]}
                 hotPlaces={hotPlaces}
@@ -150,16 +158,6 @@ export default function UserMain() {
                 setAccordionState={setAccordionState}
               />
             )}
-            {selectedPlace &&
-            selectedPlace.FCST_PPLTN &&
-            selectedPlace.FCST_PPLTN.length > 0 ? (
-              <SpotList
-                place={selectedPlace[0]}
-                hotPlaces={hotPlaces}
-                isOpen={true}
-                setAccordionState={setAccordionState}
-              />
-            ) : null}
 
             {hotPlaces.map((place, index) => (
               <SpotList

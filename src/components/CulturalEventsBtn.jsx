@@ -2,7 +2,6 @@ import styled from "styled-components";
 const Button = styled.button`
   border: 1px solid #ccc;
   display: flex;
-  cursor: pointer;
   width: 150px;
   padding: 10px;
   img {

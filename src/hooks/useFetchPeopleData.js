@@ -10,25 +10,24 @@ export default function UseFetchPeopleData() {
     places.push(`POI${String(i).padStart(3, "0")}`);
   }
 
-  const fetchPopulationData = async (place) => {
-    const res = await fetch(
-      `http://openapi.seoul.go.kr:8088/${API_KEY}/json/citydata_ppltn/1/5/${place}`
-    );
-    if (!res.ok) {
-      throw new Error("error");
-    }
-    const data = await res.json();
-    return data["SeoulRtd.citydata_ppltn"];
-  };
-
   useEffect(() => {
+    const fetchPopulationData = async (place) => {
+      const res = await fetch(
+        `http://openapi.seoul.go.kr:8088/${API_KEY}/json/citydata_ppltn/1/5/${place}`
+      );
+      if (!res.ok) {
+        throw new Error("error");
+      }
+      const data = await res.json();
+      return data["SeoulRtd.citydata_ppltn"];
+    };
+
     const fetchData = async () => {
       setIsLoading(true);
       try {
         const allPlacesData = await Promise.all(
           places.map(fetchPopulationData)
         );
-
         setPlacesData(allPlacesData);
       } catch (error) {
         console.error("error", error);

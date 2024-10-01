@@ -26,7 +26,6 @@ const ZoomControls = styled.div`
 const ZoomButton = styled.button`
   margin: 5px;
   padding: 10px;
-  cursor: pointer;
 `;
 
 export default function KakaoMap() {

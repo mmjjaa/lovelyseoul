@@ -6,17 +6,24 @@ const ListCon = styled.div`
   border: 1px solid #ccc;
   position: relative;
   padding: 1rem;
+  height: 270px;
 `;
 const Thumbnail = styled.img`
   width: 210px;
+  height: 205px;
+  min-width: 210px;
+  min-height: 205px;
   object-fit: cover;
+  overflow: hidden;
 `;
 const ListContents = styled.div`
   padding: 1rem;
+  img {
+    margin-right: 0.5rem;
+  }
 `;
 
 const AddBtn = styled.button`
-  cursor: pointer;
   display: flex;
   position: absolute;
   bottom: 5px;
@@ -28,11 +35,11 @@ export default function CultureList({ thumbnail, name, place, period, url }) {
       <Thumbnail src={thumbnail} alt="" />
       <ListContents>
         <h3>{name}</h3>
-        <p>
+        <p className="font-weight-regular">
           <img src="/img/ListSpotMark.svg" alt="" />
           {place}
         </p>
-        <p>
+        <p className="font-weight-regular">
           <img src="/img/CultureDay.svg" alt="" />
           {period}
         </p>

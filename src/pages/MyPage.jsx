@@ -16,12 +16,11 @@ const SpotListContainer = styled.div`
   max-width: 40%;
   overflow-y: auto;
 `;
-const MypageTitle = styled.h2`
+const MypageText = styled.h2`
   padding: 0 1rem;
 `;
-const MypageSubtitle = styled.p`
-  padding: 0 1rem;
-`;
+const MypageTitle = styled(MypageText).attrs({ as: "h2" })``;
+const MypageSubtitle = styled(MypageText).attrs({ as: "p" })``;
 
 const EmptyMessage = styled.div`
   text-align: center;

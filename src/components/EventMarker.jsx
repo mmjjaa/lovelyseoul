@@ -3,14 +3,12 @@ import styled from "styled-components";
 
 const InfoWindow = styled.div`
   background-color: white;
-  border: none;
   padding: 10px;
   border-radius: 5px;
   z-index: 100;
   width: 330px;
   cursor: pointer;
   button {
-    cursor: pointer;
     position: absolute;
     color: #999;
     font-size: 40px;
@@ -27,9 +25,6 @@ const InfoWindowContents = styled.div`
     width: 280px;
     height: 200px;
   }
-  p {
-    font-weight: bold;
-  }
 `;
 
 export default function EventMarker({
@@ -38,7 +33,6 @@ export default function EventMarker({
   thumbnail,
   isOpen,
   onClick,
-
   url,
 }) {
   return (
@@ -56,7 +50,7 @@ export default function EventMarker({
     >
       {isOpen && (
         <InfoWindow
-          className="box-shadow"
+          className="box-shadow border-radius-default"
           onClick={() => {
             window.open(url);
           }}
@@ -71,8 +65,8 @@ export default function EventMarker({
               x
             </button>
             <InfoWindowContents>
-              <img src={thumbnail} alt={name} />
-              <p>{name}</p>
+              <img className="border-radius-thin" src={thumbnail} alt={name} />
+              <p className="font-weight-bold">{name}</p>
             </InfoWindowContents>
           </div>
         </InfoWindow>

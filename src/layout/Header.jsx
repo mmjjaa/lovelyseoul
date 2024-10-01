@@ -5,6 +5,7 @@ import userStore from "../store/userStore";
 import UseFetchData from "../hooks/useFetchData";
 import usePlaceMarkerStore from "../store/clickPlaceMarkerStore";
 import { useNavigate } from "react-router-dom";
+import useDebounce from "../hooks/useDebounce";
 
 const StyledHeader = styled.header`
   display: flex;
@@ -24,21 +25,21 @@ const SearchCon = styled.div`
   padding: 0.5rem;
   margin-left: 1rem;
   position: relative;
+  flex: 1;
   input {
     border: none;
     outline: none;
     padding: 1rem;
     flex: 1;
-    width: 400px;
     background-color: #f4f7ff;
+    max-width: calc(40% - 170px);
   }
 
   button {
     background-color: #0087ca;
     padding: 0.5rem;
-    cursor: pointer;
     img {
-      width: 20px;
+      width: 40px;
       height: 20px;
     }
   }
@@ -61,8 +62,9 @@ const SearchResult = styled.div`
   right: 0;
   background-color: #f4f7ff;
   padding: 0%.5;
-  width: 90%;
-  z-index: 1;
+
+  width: calc(40% - 170px);
+  z-index: 100;
   max-height: 300px;
   overflow-y: auto;
 `;
@@ -76,6 +78,7 @@ const ResultItem = styled.div`
   align-items: center;
   padding: 0.5rem;
   border-bottom: 1px solid #ddd;
+
   &:last-child {
     border-bottom: none;
   }
@@ -118,12 +121,13 @@ export default function Header() {
   const { isLoggedIn, openLoginModal } = userStore();
   const { data, isLoading } = UseFetchData();
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 300);
   const { setClickedMarkerName } = usePlaceMarkerStore();
   const navigate = useNavigate();
 
   /*검색어 필터링*/
   const filteredData = data.filter((item) =>
-    item.name.toLowerCase().includes(query.toLowerCase())
+    item.name.toLowerCase().includes(debouncedQuery.toLowerCase())
   );
   const getLabelClass = (congest) => {
     switch (congest) {
@@ -143,10 +147,10 @@ export default function Header() {
   const handleSearch = () => {
     if (
       filteredData.some(
-        (item) => item.name.toLowerCase() === query.toLowerCase()
+        (item) => item.name.toLowerCase() === debouncedQuery.toLowerCase()
       )
     ) {
-      setClickedMarkerName(query);
+      setClickedMarkerName(debouncedQuery);
       setQuery("");
       navigate("/");
     }
@@ -175,7 +179,7 @@ export default function Header() {
             placeholder="주요장소를 검색해보세요."
             className="border-radius-thin"
           />
-          {query && (
+          {debouncedQuery && (
             <SearchResult className="box-shadow border-radius-thin">
               {isLoading ? (
                 <p>Loading...</p>

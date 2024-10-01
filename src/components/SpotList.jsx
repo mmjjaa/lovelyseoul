@@ -9,6 +9,7 @@ const StyledSpotList = styled.div`
   border: 1px solid #ccc;
   padding: 1rem;
   max-width: 700px;
+  min-width: 500px;
   margin: 1rem;
 `;
 
@@ -48,7 +49,7 @@ const IconText = styled.p`
   img {
     margin-right: 0.5rem;
   }
-  p {
+  span {
     margin-right: 1rem;
   }
 `;
@@ -59,19 +60,18 @@ const BtnCon = styled.div`
   margin-top: 0.5rem;
 `;
 
-const CongestionBtn = styled.button`
+const Congestion = styled.div`
   background-color: #ff4d4f;
   color: white;
   padding: 0.5rem 1rem;
 `;
-const PopularBtn = styled.button`
-  background-color: ${({ ageGroup }) => ageGroup || "#ffa940"};
+const Popular = styled.div`
+  background-color: ${({ $ageGroup }) => $ageGroup || "#ffa940"};
   color: white;
   padding: 0.5rem 1rem;
 `;
 
 const ArrowBtn = styled.button`
-  cursor: pointer;
   position: absolute;
   margin: 1rem 0;
   left: 50%;
@@ -80,10 +80,10 @@ const ArrowBtn = styled.button`
 
 const Details = styled.div`
   padding: 1rem;
-  max-height: ${({ isOpen }) => (isOpen ? "500px" : "0")};
+  max-height: ${({ $isOpen }) => ($isOpen ? "500px" : "0")};
   overflow: hidden;
   transition: max-height 0.4s ease-in-out;
-  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
+  opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
   transition: opacity 0.4s ease, max-height 0.4s ease-in-out;
   text-align: center;
 `;
@@ -137,7 +137,7 @@ export default function SpotList({ place }) {
   const [address, setAddress] = useState("");
   const isOpen = accordionStates[place.AREA_NM] || false;
 
-  /*  자세히 보기(아코디언) */
+  /*  아코디언 토글 */
   const toggleAccordion = () => {
     setAccordionState(place.AREA_NM, !isOpen);
   };
@@ -149,13 +149,12 @@ export default function SpotList({ place }) {
       openLoginModal();
       return;
     }
-    if (isFavorited) {
-      removeFavorite(place);
-      alert("찜한 목록에서 제거되었습니다.");
-    } else {
-      addFavorite(place);
-      alert("찜한 목록에 추가되었습니다.");
-    }
+    isFavorited ? removeFavorite(place) : addFavorite(place);
+    alert(
+      isFavorited
+        ? "찜한 목록에서 제거되었습니다."
+        : "찜한 목록에 추가되었습니다."
+    );
   };
 
   const ageGroups = {
@@ -198,6 +197,7 @@ export default function SpotList({ place }) {
   });
 
   const quietTimeHour = new Date(quietTimeData.FCST_TIME).getHours();
+  const quietHour = quietTimeHour < 10 ? `0${quietTimeHour}` : quietTimeHour;
 
   /* Kakao 지도 API로 좌표를 주소로 변환 */
   const getAddress = useCallback((lat, lng) => {
@@ -213,9 +213,11 @@ export default function SpotList({ place }) {
   }, []);
 
   useEffect(() => {
-    const matchedPlace = data.find((item) => item.name === place.AREA_NM);
-    if (matchedPlace) {
-      getAddress(matchedPlace.latitude, matchedPlace.longitude);
+    if (data && place.AREA_NM) {
+      const matchedPlace = data.find((item) => item.name === place.AREA_NM);
+      if (matchedPlace) {
+        getAddress(matchedPlace.latitude, matchedPlace.longitude);
+      }
     }
   }, [data, place.AREA_NM, getAddress]);
 
@@ -234,37 +236,39 @@ export default function SpotList({ place }) {
         />
         <ListContents>
           <h3>{place.AREA_NM}</h3>
-          <IconText>
+          <p className="font-weight-regular">
             <img src="/img/ListSpotMark.svg" />
             {address}
-          </IconText>
+          </p>
           <p>{place.AREA_CONGEST_MSG}</p>
           <IconText>
             <img src="/img/woman.jpg" alt="Woman Icon" />
-            <p>{place.FEMALE_PPLTN_RATE}</p>
+            <span>{place.FEMALE_PPLTN_RATE}</span>
+          </IconText>
+          <IconText>
             <img src="/img/man.jpg" alt="Man Icon" />
-            <p>{place.MALE_PPLTN_RATE}</p>
+            <span> {place.MALE_PPLTN_RATE}</span>
           </IconText>
           <BtnCon>
-            <CongestionBtn className="border-radius-default font-size-small ">
+            <Congestion className="border-radius-default font-size-small font-weight-bold ">
               {place.AREA_CONGEST_LVL}
-            </CongestionBtn>
-            <PopularBtn
-              className="border-radius-default font-size-small"
-              ageGroup={popularAgeColor}
+            </Congestion>
+            <Popular
+              className="border-radius-default font-size-small font-weight-bold"
+              $ageGroup={popularAgeColor}
             >
               {popularAgeGroup}한테 인기 많아요
-            </PopularBtn>
+            </Popular>
           </BtnCon>
           <ArrowBtn>
             <img src={isOpen ? "/img/UpArrow.svg" : "/img/DownArrow.svg"} />
           </ArrowBtn>
         </ListContents>
       </ListCon>
-      <Details isOpen={isOpen}>
+      <Details $isOpen={isOpen}>
         <QuietTime className="border-radius-default">
           <h2>
-            <strong>{quietTimeHour}</strong>시에 가장 한적해요!
+            <strong>{quietHour}</strong>시에 가장 한적해요!
           </h2>
         </QuietTime>
 
