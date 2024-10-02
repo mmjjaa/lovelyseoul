@@ -1,32 +1,11 @@
-import styled from "styled-components";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Map } from "react-kakao-maps-sdk";
 import UseFetchData from "../hooks/useFetchData";
 import PlaceMarker from "../components/PlaceMarker";
 import EventMarker from "../components/EventMarker";
 import useFetchEventData from "../hooks/useFetchEventData";
 import BounceLoader from "react-spinners/BounceLoader";
-
-const StyledKakaoMap = styled.div`
-  width: 60%;
-  height: 100vh;
-  position: relative;
-  overflow: hidden;
-`;
-
-const ZoomControls = styled.div`
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  display: flex;
-  flex-direction: row;
-  z-index: 10;
-`;
-
-const ZoomButton = styled.button`
-  margin: 5px;
-  padding: 10px;
-`;
+import * as S from "../assets/layout.styled/KakaoMap.styled";
 
 export default function KakaoMap() {
   const [level, setLevel] = useState(9);
@@ -34,10 +13,6 @@ export default function KakaoMap() {
   const [openPlaceInfoWindow, setOpenPlaceInfoWindow] = useState(null);
   const [openEventInfoWindow, setOpenEventInfoWindow] = useState(null);
   const { eventMarkers, fetchEventData, error } = useFetchEventData();
-
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
 
   const zoomIn = () => {
     setLevel((prevLevel) => Math.max(prevLevel - 1, 1));
@@ -64,7 +39,7 @@ export default function KakaoMap() {
     return <div>데이터 로딩 중 오류 발생: {error.message}</div>;
   }
   return (
-    <StyledKakaoMap className="border-radius-default">
+    <S.StyledKakaoMap className="border-radius-default">
       <Map
         id={`map`}
         center={{
@@ -117,14 +92,14 @@ export default function KakaoMap() {
           );
         })}
       </Map>
-      <ZoomControls>
-        <ZoomButton onClick={zoomOut}>
+      <S.ZoomControls>
+        <S.ZoomButton onClick={zoomOut}>
           <img src="/img/ZoomOut.svg" alt="Zoom Out" />
-        </ZoomButton>
-        <ZoomButton onClick={zoomIn}>
+        </S.ZoomButton>
+        <S.ZoomButton onClick={zoomIn}>
           <img src="/img/ZoomIn.svg" alt="Zoom In" />
-        </ZoomButton>
-      </ZoomControls>
-    </StyledKakaoMap>
+        </S.ZoomButton>
+      </S.ZoomControls>
+    </S.StyledKakaoMap>
   );
 }

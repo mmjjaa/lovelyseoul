@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import KakaoMap from "../layout/KakaoMap";
 import CurrentLocationBtn from "../components/CurrentLocationBtn";
 import CulturalEventsBtn from "../components/CulturalEventsBtn";
@@ -9,44 +8,8 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import useFetchEventData from "../hooks/useFetchEventData";
 import BounceLoader from "react-spinners/BounceLoader";
+import * as S from "../assets/pages.styled/CulturalEventsPage.styled";
 
-const Main = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100vh;
-`;
-
-const SpotListContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 40%;
-  max-width: 40%;
-  overflow-y: auto;
-`;
-const BtnCon = styled.div`
-  display: flex;
-  padding: 1rem;
-  gap: 1rem;
-`;
-const EventsText = styled.h2`
-  padding: 0 1rem;
-`;
-const EventsTitle = styled(EventsText).attrs({ as: "h2" })``;
-const EventsSubtitle = styled(EventsText).attrs({ as: "p" })``;
-
-const NoEventMessage = styled.div`
-  text-align: center;
-  padding-top: 5rem;
-  p {
-    padding: 1rem;
-  }
-`;
-const LoaderContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-`;
 export default function CulturalEventsPage() {
   const { fetchEventData, error } = useFetchEventData();
   const { accordionStates } = useSpotListStore();
@@ -77,31 +40,31 @@ export default function CulturalEventsPage() {
     }
   }, [spotName]);
   return (
-    <Main>
-      <SpotListContainer>
-        <EventsTitle>
+    <S.Main>
+      <S.SpotListContainer>
+        <S.EventsTitle>
           <strong>{spotName}</strong>
           {postposition} 지금!
-        </EventsTitle>
-        <EventsSubtitle>주변 문화 행사를 확인해보세요!</EventsSubtitle>
+        </S.EventsTitle>
+        <S.EventsSubtitle>주변 문화 행사를 확인해보세요!</S.EventsSubtitle>
 
-        <BtnCon>
+        <S.BtnCon>
           <Link to="/">
             <CurrentLocationBtn />
           </Link>
           <CulturalEventsBtn />
-        </BtnCon>
+        </S.BtnCon>
         {loading && (
-          <LoaderContainer>
+          <S.LoaderContainer>
             <BounceLoader color="#0087CA" size={60} />
-          </LoaderContainer>
+          </S.LoaderContainer>
         )}
         {error && <div>오류가 발생했습니다: {error.message}</div>}
         {!loading && eventList.length === 0 && (
-          <NoEventMessage>
+          <S.NoEventMessage>
             <img src="/img/EmptySearch.svg" alt="" />
             <p>주변 문화 행사가 없습니다.</p>
-          </NoEventMessage>
+          </S.NoEventMessage>
         )}
 
         {eventList.length > 0 &&
@@ -115,8 +78,8 @@ export default function CulturalEventsPage() {
               url={event.url}
             />
           ))}
-      </SpotListContainer>
+      </S.SpotListContainer>
       <KakaoMap />
-    </Main>
+    </S.Main>
   );
 }

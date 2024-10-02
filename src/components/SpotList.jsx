@@ -1,126 +1,10 @@
-import styled from "styled-components";
 import { useState, useEffect, useCallback } from "react";
 import { ResponsiveBarCanvas } from "@nivo/bar";
 import UseGetData from "../hooks/useFetchData";
 import useSpotListStore from "../store/spotListStore";
 import useUserStore from "../store/userStore";
+import * as S from "../assets/components.styled/SpotList.styled";
 
-const StyledSpotList = styled.div`
-  border: 1px solid #ccc;
-  padding: 1rem;
-  max-width: 700px;
-  min-width: 500px;
-  margin: 1rem;
-`;
-
-const ListCon = styled.div`
-  display: flex;
-  position: relative;
-  padding: 1rem;
-  cursor: pointer;
-`;
-
-const SpotImg = styled.img`
-  width: 150px;
-  height: auto;
-  object-fit: cover;
-`;
-
-const HeartImg = styled.img`
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-`;
-
-const ListContents = styled.div`
-  flex: 1;
-  padding-left: 1rem;
-
-  p {
-    margin: 0.5rem 0;
-  }
-`;
-
-const IconText = styled.p`
-  display: inline-flex;
-  align-items: center;
-  margin-right: 1rem;
-  img {
-    margin-right: 0.5rem;
-  }
-  span {
-    margin-right: 1rem;
-  }
-`;
-
-const BtnCon = styled.div`
-  display: flex;
-  gap: 0.5rem;
-  margin-top: 0.5rem;
-`;
-
-const Congestion = styled.div`
-  background-color: #ff4d4f;
-  color: white;
-  padding: 0.5rem 1rem;
-`;
-const Popular = styled.div`
-  background-color: ${({ $ageGroup }) => $ageGroup || "#ffa940"};
-  color: white;
-  padding: 0.5rem 1rem;
-`;
-
-const ArrowBtn = styled.button`
-  position: absolute;
-  margin: 1rem 0;
-  left: 50%;
-  transform: translateX(-50%);
-`;
-
-const Details = styled.div`
-  padding: 1rem;
-  max-height: ${({ $isOpen }) => ($isOpen ? "500px" : "0")};
-  overflow: hidden;
-  transition: max-height 0.4s ease-in-out;
-  opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
-  transition: opacity 0.4s ease, max-height 0.4s ease-in-out;
-  text-align: center;
-`;
-
-const QuietTime = styled.div`
-  padding: 1rem;
-  background-color: #eee;
-  margin-top: 1rem;
-`;
-
-const AgeBar = styled.div`
-  display: flex;
-  margin-left: 5rem;
-`;
-
-const AgeItem = styled.div`
-  display: flex;
-  align-items: center;
-  margin-right: 1rem;
-
-  span {
-    width: 10px;
-    height: 10px;
-    background-color: ${({ color }) => color};
-    margin-right: 2px;
-  }
-  p {
-    color: #ccc;
-  }
-`;
-const CustomTooltip = styled.div`
-  background: white;
-  border: 1px solid #ccc;
-  padding: 10px;
-  border-radius: 5px;
-  font-size: 14px;
-`;
 export default function SpotList({ place }) {
   const { accordionStates, setAccordionState } = useSpotListStore();
   const {
@@ -222,55 +106,55 @@ export default function SpotList({ place }) {
   }, [data, place.AREA_NM, getAddress]);
 
   return (
-    <StyledSpotList className="border-radius-default">
-      <ListCon onClick={toggleAccordion}>
-        <SpotImg
+    <S.StyledSpotList className="border-radius-default">
+      <S.ListCon onClick={toggleAccordion}>
+        <S.SpotImg
           src={`https://data.seoul.go.kr/SeoulRtd/images/hotspot/${place.AREA_NM}.jpg`}
           alt="Spot Image"
           className="border-radius-thin"
         />
-        <HeartImg
+        <S.HeartImg
           src={isFavorited ? "/img/RedHeart.svg" : "/img/ListHeart.svg"}
           alt="Heart Icon"
           onClick={handleHeartClick}
         />
-        <ListContents>
+        <S.ListContents>
           <h3>{place.AREA_NM}</h3>
           <p className="font-weight-regular">
             <img src="/img/ListSpotMark.svg" />
             {address}
           </p>
           <p>{place.AREA_CONGEST_MSG}</p>
-          <IconText>
+          <S.IconText>
             <img src="/img/woman.jpg" alt="Woman Icon" />
             <span>{place.FEMALE_PPLTN_RATE}</span>
-          </IconText>
-          <IconText>
+          </S.IconText>
+          <S.IconText>
             <img src="/img/man.jpg" alt="Man Icon" />
             <span> {place.MALE_PPLTN_RATE}</span>
-          </IconText>
-          <BtnCon>
-            <Congestion className="border-radius-default font-size-small font-weight-bold ">
+          </S.IconText>
+          <S.BtnCon>
+            <S.Congestion className="border-radius-default font-size-small font-weight-bold ">
               {place.AREA_CONGEST_LVL}
-            </Congestion>
-            <Popular
+            </S.Congestion>
+            <S.Popular
               className="border-radius-default font-size-small font-weight-bold"
               $ageGroup={popularAgeColor}
             >
               {popularAgeGroup}한테 인기 많아요
-            </Popular>
-          </BtnCon>
-          <ArrowBtn>
+            </S.Popular>
+          </S.BtnCon>
+          <S.ArrowBtn>
             <img src={isOpen ? "/img/UpArrow.svg" : "/img/DownArrow.svg"} />
-          </ArrowBtn>
-        </ListContents>
-      </ListCon>
-      <Details $isOpen={isOpen}>
-        <QuietTime className="border-radius-default">
+          </S.ArrowBtn>
+        </S.ListContents>
+      </S.ListCon>
+      <S.Details $isOpen={isOpen}>
+        <S.QuietTime className="border-radius-default">
           <h2>
             <strong>{quietHour}</strong>시에 가장 한적해요!
           </h2>
-        </QuietTime>
+        </S.QuietTime>
 
         <div style={{ height: "100px", marginTop: "1rem" }}>
           <p>
@@ -294,21 +178,21 @@ export default function SpotList({ place }) {
             axisLeft={null}
             enableGridY={false}
             tooltip={(bar) => (
-              <CustomTooltip>
+              <S.CustomTooltip>
                 <strong>{bar.id}</strong>: {Math.round(bar.value)}%
-              </CustomTooltip>
+              </S.CustomTooltip>
             )}
           />
         </div>
 
-        <AgeBar>
+        <S.AgeBar>
           {Object.keys(ageGroups).map((ageGroup) => (
-            <AgeItem key={ageGroup} color={ageGroups[ageGroup].color}>
+            <S.AgeItem key={ageGroup} color={ageGroups[ageGroup].color}>
               <span className="border-radius-circle"></span> <p>{ageGroup}</p>
-            </AgeItem>
+            </S.AgeItem>
           ))}
-        </AgeBar>
-      </Details>
-    </StyledSpotList>
+        </S.AgeBar>
+      </S.Details>
+    </S.StyledSpotList>
   );
 }

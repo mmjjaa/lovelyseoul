@@ -1,121 +1,11 @@
 import { useState } from "react";
-import styled from "styled-components";
 import { Link } from "react-router-dom";
 import userStore from "../store/userStore";
 import UseFetchData from "../hooks/useFetchData";
 import usePlaceMarkerStore from "../store/clickPlaceMarkerStore";
 import { useNavigate } from "react-router-dom";
 import useDebounce from "../hooks/useDebounce";
-
-const StyledHeader = styled.header`
-  display: flex;
-  align-items: center;
-  padding: 1rem;
-  margin-bottom: 20px;
-  position: relative;
-`;
-
-const Logo = styled.h1`
-  margin: 0;
-`;
-
-const SearchCon = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 0.5rem;
-  margin-left: 1rem;
-  position: relative;
-  flex: 1;
-  input {
-    border: none;
-    outline: none;
-    padding: 1rem;
-    flex: 1;
-    background-color: #f4f7ff;
-    max-width: calc(40% - 170px);
-  }
-
-  button {
-    background-color: #0087ca;
-    padding: 0.5rem;
-    img {
-      width: 40px;
-      height: 20px;
-    }
-  }
-`;
-
-const MyPage = styled(Link)`
-  display: flex;
-  align-items: center;
-  margin-left: auto;
-  img {
-    width: 46px;
-    height: 46px;
-    margin-right: 0.5rem;
-  }
-`;
-const SearchResult = styled.div`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background-color: #f4f7ff;
-  padding: 0%.5;
-
-  width: calc(40% - 170px);
-  z-index: 100;
-  max-height: 300px;
-  overflow-y: auto;
-`;
-const NoSearchResult = styled.p`
-  padding: 8px 16px;
-  text-align: center;
-`;
-
-const ResultItem = styled.div`
-  display: flex;
-  align-items: center;
-  padding: 0.5rem;
-  border-bottom: 1px solid #ddd;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  .label {
-    width: 70px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    margin-right: 1rem;
-    font-size: 12px;
-    color: #fff;
-    font-weight: bold;
-  }
-
-  .label.red {
-    background-color: #dd1f3d;
-  }
-
-  .label.orange {
-    background-color: #ff8040;
-  }
-
-  .label.yellow {
-    background-color: #ffb100;
-  }
-
-  .label.green {
-    background-color: #00d369;
-  }
-
-  .name {
-    flex: 1;
-  }
-`;
+import * as S from "../assets/layout.styled/Header.styled";
 
 export default function Header() {
   const { isLoggedIn, openLoginModal } = userStore();
@@ -144,13 +34,14 @@ export default function Header() {
     }
   };
 
-  const handleSearch = () => {
+  const handleSearch = (searchTerm) => {
+    const searchQuery = searchTerm || debouncedQuery;
     if (
       filteredData.some(
-        (item) => item.name.toLowerCase() === debouncedQuery.toLowerCase()
+        (item) => item.name.toLowerCase() === searchQuery.toLowerCase()
       )
     ) {
-      setClickedMarkerName(debouncedQuery);
+      setClickedMarkerName(searchQuery);
       setQuery("");
       navigate("/");
     }
@@ -162,15 +53,19 @@ export default function Header() {
     }
   };
 
+  const handleResultClick = (itemName) => {
+    handleSearch(itemName);
+  };
+
   return (
-    <StyledHeader className="box-shadow">
-      <Logo>
+    <S.StyledHeader className="box-shadow">
+      <div>
         <Link to="/">
           <img src="/img/logo.svg" alt="로고" />
         </Link>
-      </Logo>
+      </div>
       <nav style={{ display: "flex", alignItems: "center", flexGrow: 1 }}>
-        <SearchCon>
+        <S.SearchCon>
           <input
             type="text"
             value={query}
@@ -180,14 +75,17 @@ export default function Header() {
             className="border-radius-thin"
           />
           {debouncedQuery && (
-            <SearchResult className="box-shadow border-radius-thin">
+            <S.SearchResult className="box-shadow border-radius-thin">
               {isLoading ? (
                 <p>Loading...</p>
               ) : filteredData.length === 0 ? (
-                <NoSearchResult>검색 결과가 없습니다.</NoSearchResult>
+                <S.NoSearchResult>검색 결과가 없습니다.</S.NoSearchResult>
               ) : (
                 filteredData.map((item, index) => (
-                  <ResultItem key={index}>
+                  <S.ResultItem
+                    key={index}
+                    onClick={() => handleResultClick(item.name)}
+                  >
                     <div
                       className={`label ${getLabelClass(
                         item.congest
@@ -196,23 +94,23 @@ export default function Header() {
                       {item.congest}
                     </div>
                     <div className="name">{item.name}</div>
-                  </ResultItem>
+                  </S.ResultItem>
                 ))
               )}
-            </SearchResult>
+            </S.SearchResult>
           )}
           <button className="border-radius-thin" onClick={handleSearch}>
             <img src="/img/search.svg" alt="검색" />
           </button>
-        </SearchCon>
-        <MyPage
+        </S.SearchCon>
+        <S.MyPage
           to={isLoggedIn ? "/mypage" : "#"}
           onClick={!isLoggedIn ? openLoginModal : null}
         >
           <img src="/img/mypage.svg" alt="마이페이지 버튼" />
           <h3>MY</h3>
-        </MyPage>
+        </S.MyPage>
       </nav>
-    </StyledHeader>
+    </S.StyledHeader>
   );
 }

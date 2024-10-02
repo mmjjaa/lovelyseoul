@@ -1,4 +1,3 @@
-import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 import SpotList from "../components/SpotList";
 import LoginModal from "../components/LoginModal";
@@ -12,48 +11,8 @@ import usePlaceMarkerStore from "../store/clickPlaceMarkerStore";
 import { checkKorean } from "../utils/checkKorean";
 import BounceLoader from "react-spinners/BounceLoader";
 import useUserStore from "../store/userStore";
-
-const Main = styled.div`
-  display: flex;
-  width: 100%;
-  height: 100vh;
-  position: relative;
-`;
-
-const SpotListContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 40%;
-  max-width: 40%;
-  margin: 1rem;
-  overflow-y: auto;
-`;
-const TitleContainer = styled.div`
-  position: sticky;
-  top: 0;
-  background-color: white;
-  z-index: 10;
-  padding: 1rem;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
-`;
-
-const BtnCon = styled.div`
-  display: flex;
-  padding: 1rem;
-  gap: 1rem;
-`;
-const NoUserMainText = styled.div`
-  padding: 0 1rem;
-`;
-const NoUserMainTitle = styled(NoUserMainText).attrs({ as: "h2" })``;
-const NoUserMainSubtitle = styled(NoUserMainText).attrs({ as: "p" })``;
-
-const LoaderContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-`;
+import * as S from "../assets/pages.styled/NoUserMainPage.styled";
+import { handleSelectedMarker, scrollToFirstList } from "../utils/spotUtils";
 
 export default function NoUserMainPage() {
   const { showLoginModal, openLoginModal, closeLoginModal } = useUserStore();
@@ -85,66 +44,64 @@ export default function NoUserMainPage() {
 
   /* 선택된 마커와 일치하는 장소 찾기*/
   useEffect(() => {
-    if (clickedMarkerName && selectedPlace) {
-      setAccordionState(clickedMarkerName, true);
-      Object.keys(accordionStates).forEach((key) => {
-        if (key !== clickedMarkerName) {
-          setAccordionState(key, false);
-        }
-      });
-    }
+    handleSelectedMarker(
+      clickedMarkerName,
+      selectedPlace,
+      accordionStates,
+      setAccordionState
+    );
   }, [clickedMarkerName, placesData, setAccordionState, selectedPlace]);
 
   /*선택된 장소 있을 때 첫 번째 리스트로 스크롤*/
   useEffect(() => {
-    if (spotListContainerRef.current && hotPlaces.length > 0) {
-      spotListContainerRef.current.scrollTop = 0;
-      if (selectedPlace && selectedPlace.length > 0) {
-        setAccordionState(selectedPlace[0].AREA_NM, true);
-      }
-    }
+    scrollToFirstList(
+      spotListContainerRef,
+      hotPlaces,
+      selectedPlace,
+      setAccordionState
+    );
   }, [selectedPlace, hotPlaces, setAccordionState]);
   return (
-    <Main>
-      <SpotListContainer ref={spotListContainerRef}>
+    <S.Main>
+      <S.SpotListContainer ref={spotListContainerRef}>
         {isLoading ? (
-          <LoaderContainer>
+          <S.LoaderContainer>
             <BounceLoader color="#0087CA" loading={isLoading} size={60} />
-          </LoaderContainer>
+          </S.LoaderContainer>
         ) : (
           <>
-            <TitleContainer>
+            <S.TitleContainer>
               {isOpen ? (
                 <>
-                  <NoUserMainTitle>
+                  <S.NoUserMainTitle>
                     <strong>{spotName}</strong>
                     {postposition} 지금!
-                  </NoUserMainTitle>
-                  <NoUserMainSubtitle>
+                  </S.NoUserMainTitle>
+                  <S.NoUserMainSubtitle>
                     가장 한산한 시간대를 확인해보세요!
-                  </NoUserMainSubtitle>
-                  <BtnCon>
+                  </S.NoUserMainSubtitle>
+                  <S.BtnCon>
                     <Link>
                       <CurrentLocationBtn />
                     </Link>
                     <Link to="/culturaleventspage">
                       <CulturalEventsBtn />
                     </Link>
-                  </BtnCon>
+                  </S.BtnCon>
                 </>
               ) : (
                 <>
-                  <NoUserMainTitle>
+                  <S.NoUserMainTitle>
                     현재 가장
                     <strong> 인기가 많은 </strong>
                     곳이에요!
-                  </NoUserMainTitle>
-                  <NoUserMainSubtitle>
+                  </S.NoUserMainTitle>
+                  <S.NoUserMainSubtitle>
                     저희가 한눈에 보실 수 있도록 모아봤어요!
-                  </NoUserMainSubtitle>
+                  </S.NoUserMainSubtitle>
                 </>
               )}
-            </TitleContainer>
+            </S.TitleContainer>
             {selectedPlace && selectedPlace[0] && (
               <SpotList
                 setShowLoginModal={openLoginModal}
@@ -166,11 +123,11 @@ export default function NoUserMainPage() {
             ))}
           </>
         )}
-      </SpotListContainer>
+      </S.SpotListContainer>
 
       <KakaoMap setHotPlaces={setHotPlaces} />
 
       {showLoginModal && <LoginModal setShowLoginModal={closeLoginModal} />}
-    </Main>
+    </S.Main>
   );
 }
