@@ -25,7 +25,6 @@ export default function UseFetchData() {
         setIsLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
