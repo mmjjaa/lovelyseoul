@@ -18,6 +18,9 @@ export const SpotListContainer = styled.div`
   width: 40%;
   max-width: 40%;
   overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   ${media("tablet")`
     width: 100%;

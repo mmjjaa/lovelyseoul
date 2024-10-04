@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import media from "../../utils/media";
 
-
 export const Main = styled.div`
   display: flex;
   width: 100%;
@@ -18,6 +17,9 @@ export const SpotListContainer = styled.div`
   width: 40%;
   max-width: 40%;
   overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   ${media("tablet")`
     width: 100%;
