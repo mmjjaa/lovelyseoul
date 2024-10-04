@@ -38,7 +38,6 @@ export default function useFetchEventData() {
         return markers;
       } else {
         setEventMarkers([]);
-        setError(result.error || "No events found");
         return [];
       }
     } catch (err) {

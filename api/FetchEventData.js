@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     if (eventData && eventData.length > 0) {
       res.status(200).json(eventData);
     } else {
-      res.status(404).json({ error: "No events found" });
+      res.status(404).json([]);
     }
   } catch (error) {
     console.error("오류 발생:", error);
