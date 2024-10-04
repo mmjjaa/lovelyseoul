@@ -98,7 +98,7 @@ export default function UserMain() {
               ) : (
                 <>
                   <S.UserMainTitle>
-                    {userInfo.name}님! 현재 {userInfo.age}에게
+                    {userInfo.name}님! 현재 {userInfo.age}대에게
                     <strong> 인기가 많은 </strong>
                     곳이에요!
                   </S.UserMainTitle>

@@ -29,7 +29,10 @@ export default function LoginModal() {
   return (
     <S.ModalOverlay>
       <S.LoginCon className="border-radius-default">
-        <S.DeleteBtn className="font-size-max-extra-large " onClick={handleClose}>
+        <S.DeleteBtn
+          className="font-size-max-extra-large "
+          onClick={handleClose}
+        >
           x
         </S.DeleteBtn>
         <S.Title>
@@ -52,12 +55,12 @@ export default function LoginModal() {
             onChange={(e) => setAge(e.target.value)}
           >
             <option value="">나이를 선택해주세요</option>
-            <option value="10대">10대</option>
-            <option value="20대">20대</option>
-            <option value="30대">30대</option>
-            <option value="40대">40대</option>
-            <option value="50대">50대</option>
-            <option value="60대">60대</option>
+            <option value="10">10대</option>
+            <option value="20">20대</option>
+            <option value="30">30대</option>
+            <option value="40">40대</option>
+            <option value="50">50대</option>
+            <option value="60">60대</option>
           </select>
           {error && <p style={{ color: "red" }}>{error}</p>}
           <S.SaveBtn className="border-radius-default" type="submit">
