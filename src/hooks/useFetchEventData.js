@@ -3,18 +3,18 @@ import { useState } from "react";
 export default function useFetchEventData() {
   const [eventMarkers, setEventMarkers] = useState([]);
   const [error, setError] = useState(null);
-  const API_KEY = import.meta.env.VITE_APP_SEOUL_KEY;
 
   const fetchEventData = async (name) => {
     try {
-      const res = await fetch(
-        `http://openapi.seoul.go.kr:8088/${API_KEY}/json/citydata/1/5/${name}`
-      );
+      const res = await fetch(`/api/FetchEventData?name=${name}`, {
+        headers: {
+          accept: "application/json",
+        },
+      });
       const result = await res.json();
-      const eventData = result.CITYDATA.EVENT_STTS;
 
-      if (eventData && eventData.length > 0) {
-        const markers = eventData.map((event) => {
+      if (res.ok) {
+        const markers = result.map((event) => {
           const eventX = event.EVENT_X;
           const eventY = event.EVENT_Y;
           const eventName = event.EVENT_NM;
@@ -38,10 +38,11 @@ export default function useFetchEventData() {
         return markers;
       } else {
         setEventMarkers([]);
+        setError(result.error || "No events found");
         return [];
       }
     } catch (err) {
-      console.error(" 오류 발생:", err);
+      console.error("오류 발생:", err);
       setError(err);
       return [];
     }
