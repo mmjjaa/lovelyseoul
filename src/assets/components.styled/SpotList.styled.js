@@ -22,7 +22,7 @@ export const ListCon = styled.div`
 `;
 
 export const SpotImg = styled.img`
-  width: 150px;
+  width: 210px;
   height: auto;
   object-fit: cover;
 `;
