@@ -2,7 +2,7 @@ import styled from "styled-components";
 import media from "../../utils/media";
 
 export const StyledSpotList = styled.div`
-  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px #0003;
   padding: 1rem;
   max-width: 700px;
   min-width: 500px;

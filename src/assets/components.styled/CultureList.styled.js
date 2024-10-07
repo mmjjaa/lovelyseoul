@@ -4,7 +4,7 @@ import media from "../../utils/media";
 export const ListCon = styled.div`
   display: flex;
   margin: 1rem;
-  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px #0003;
   position: relative;
   padding: 1rem;
   height: 270px;
