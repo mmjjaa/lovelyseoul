@@ -6,7 +6,8 @@ import useUserStore from "../store/userStore";
 import * as S from "../assets/components.styled/SpotList.styled";
 
 export default function SpotList({ place }) {
-  const { accordionStates, setAccordionState } = useSpotListStore();
+  const { accordionStates, setAccordionState, setCoordinates } =
+    useSpotListStore();
   const {
     isLoggedIn,
     openLoginModal,
@@ -101,9 +102,16 @@ export default function SpotList({ place }) {
       const matchedPlace = data.find((item) => item.name === place.AREA_NM);
       if (matchedPlace) {
         getAddress(matchedPlace.latitude, matchedPlace.longitude);
+        if (isOpen) {
+          setCoordinates(
+            place.AREA_NM,
+            matchedPlace.latitude,
+            matchedPlace.longitude
+          );
+        }
       }
     }
-  }, [data, place.AREA_NM, getAddress]);
+  }, [data, place.AREA_NM, getAddress, isOpen, setCoordinates]);
 
   return (
     <S.StyledSpotList className="border-radius-default">
