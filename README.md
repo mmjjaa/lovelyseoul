@@ -1,6 +1,7 @@
 # 💡 소개
 
 - 서울시 공공데이터를 활용한 실시 인구 혼잡도 및 정보 제공 웹사이트
+- https://lovelyseoul.vercel.app/
 
 # ⭐️ 핵심 기능
 - 인구 혼잡도 실시간 정보 및 가장 한산한 시간
@@ -18,8 +19,8 @@
 |![initial](https://github.com/user-attachments/assets/a701f2bc-2586-4657-85d4-acf76affc4a3)|  ![initial](https://github.com/user-attachments/assets/ceaffdbe-7ac3-40ca-871b-09f013057d14)|
 | **마이 페이지** | **로그인 안 된 상태에서 마이 페이지 및 찜하기 클릭** |
 | ![initial](https://github.com/user-attachments/assets/f76b9ad4-3064-408b-81c9-34a88aab2803)|  ![initial](https://github.com/user-attachments/assets/4166e721-6b80-4309-a96a-81f30ed342aa)|
-| **주요 장소 검색** |
- | ![initial](https://github.com/user-attachments/assets/07c4ab2e-7e9f-4412-aae0-87eb6eb62a44)|
+| **주요 장소 검색** |**장소 마커 클릭 시 주변 문화 마커** |
+ | ![initial](https://github.com/user-attachments/assets/07c4ab2e-7e9f-4412-aae0-87eb6eb62a44)| ![initial](https://github.com/user-attachments/assets/2ec8139b-afcd-4bd0-a169-d9b0008d9170)
 
 
 
