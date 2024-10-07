@@ -2,6 +2,7 @@ import { create } from "zustand";
 
 const useSpotListStore = create((set) => ({
   accordionStates: {},
+  coordinates: {},
   setAccordionState: (spotName, isOpen) =>
     set((state) => {
       const newAccordionStates = { [spotName]: isOpen };
@@ -14,6 +15,13 @@ const useSpotListStore = create((set) => ({
         accordionStates: newAccordionStates,
       };
     }),
+  setCoordinates: (spotName, latitude, longitude) =>
+    set((state) => ({
+      coordinates: {
+        ...state.coordinates,
+        [spotName]: { latitude, longitude },
+      },
+    })),
 }));
 
 export default useSpotListStore;

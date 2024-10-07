@@ -15,12 +15,15 @@ export const ModalOverlay = styled.div`
 
 export const LoginCon = styled.div`
   width: 400px;
-  height: 400px;
+  height: 450px;
   position: relative;
   text-align: center;
   margin: 1rem;
   background-color: white;
   z-index: 10;
+  h3 {
+    margin-bottom: 10px;
+  }
 `;
 
 export const DeleteBtn = styled.button`

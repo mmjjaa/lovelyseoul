@@ -58,7 +58,14 @@ export default function PlaceMarker({ id, position, name, isOpen, onClick }) {
         <InfoWindow className="box-shadow" onClick={handleInfoWindowClick}>
           {console.log("InfoWindowContents name:", name)}
           <div>
-            <button onClick={onClick}>x</button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onClick(e);
+              }}
+            >
+              x
+            </button>
             <InfoWindowContents>
               <img
                 src={`https://data.seoul.go.kr/SeoulRtd/images/hotspot/${name}.jpg`}

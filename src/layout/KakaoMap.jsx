@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Map } from "react-kakao-maps-sdk";
 import UseFetchData from "../hooks/useFetchData";
 import PlaceMarker from "../components/PlaceMarker";
@@ -6,13 +6,29 @@ import EventMarker from "../components/EventMarker";
 import useFetchEventData from "../hooks/useFetchEventData";
 import BounceLoader from "react-spinners/BounceLoader";
 import * as S from "../assets/layout.styled/KakaoMap.styled";
+import useSpotListStore from "../store/spotListStore";
 
 export default function KakaoMap() {
   const [level, setLevel] = useState(9);
   const { data, isLoading } = UseFetchData();
+  const [center, setCenter] = useState({ lat: 37.574187, lng: 126.976882 });
   const [openPlaceInfoWindow, setOpenPlaceInfoWindow] = useState(null);
   const [openEventInfoWindow, setOpenEventInfoWindow] = useState(null);
   const { eventMarkers, fetchEventData, error } = useFetchEventData();
+  const { accordionStates, coordinates } = useSpotListStore();
+
+  /* 아코디언 상태가 변경될 때, 열려 있는 장소의 좌표로 지도 중앙 이동 */
+  useEffect(() => {
+    const openSpot = Object.keys(accordionStates).find(
+      (spot) => accordionStates[spot] === true
+    );
+    if (openSpot && coordinates[openSpot]) {
+      const { latitude, longitude } = coordinates[openSpot];
+      setCenter({ lat: parseFloat(latitude), lng: parseFloat(longitude) });
+      setOpenPlaceInfoWindow(`${latitude},${longitude}`);
+      setLevel(2);
+    }
+  }, [accordionStates, coordinates]);
 
   const zoomIn = () => {
     setLevel((prevLevel) => Math.max(prevLevel - 1, 1));
@@ -42,10 +58,7 @@ export default function KakaoMap() {
     <S.StyledKakaoMap className="border-radius-default">
       <Map
         id={`map`}
-        center={{
-          lat: 37.574187,
-          lng: 126.976882,
-        }}
+        center={center}
         style={{
           width: "100%",
           height: "100%",

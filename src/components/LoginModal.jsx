@@ -36,7 +36,8 @@ export default function LoginModal() {
           x
         </S.DeleteBtn>
         <S.Title>
-          <h3>로그인</h3>
+          <h3>👋</h3>
+          <h3>이름/연령대를 알려주세요!</h3>
           <p>간단한 정보를 입력하시면 </p>
           <p>좋은 정보를 추천해드릴게요!</p>
         </S.Title>
