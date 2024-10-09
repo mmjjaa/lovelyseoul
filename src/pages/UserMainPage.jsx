@@ -8,10 +8,10 @@ import UseFetchPeopleData from "../hooks/useFetchPeopleData";
 import { useState, useEffect, useRef } from "react";
 import useSpotListStore from "../store/spotListStore";
 import usePlaceMarkerStore from "../store/clickPlaceMarkerStore";
-import BounceLoader from "react-spinners/BounceLoader";
 import { checkKorean } from "../utils/checkKorean";
 import * as S from "../assets/pages.styled/UserMainPage.styled";
 import { handleSelectedMarker, scrollToFirstList } from "../utils/spotUtils";
+import Loading from "../components/Loading";
 
 export default function UserMain() {
   const { userInfo } = useUserStore();
@@ -71,9 +71,7 @@ export default function UserMain() {
     <S.Main>
       <S.SpotListContainer ref={spotListContainerRef}>
         {isLoading ? (
-          <S.LoaderContainer>
-            <BounceLoader color="#0087CA" loading={isLoading} size={60} />
-          </S.LoaderContainer>
+          <Loading isLoading={isLoading} />
         ) : (
           <>
             <S.TitleContainer>

@@ -9,10 +9,10 @@ import UseFetchPeopleData from "../hooks/useFetchPeopleData";
 import useSpotListStore from "../store/spotListStore";
 import usePlaceMarkerStore from "../store/clickPlaceMarkerStore";
 import { checkKorean } from "../utils/checkKorean";
-import BounceLoader from "react-spinners/BounceLoader";
 import useUserStore from "../store/userStore";
 import * as S from "../assets/pages.styled/NoUserMainPage.styled";
 import { handleSelectedMarker, scrollToFirstList } from "../utils/spotUtils";
+import Loading from "../components/Loading";
 
 export default function NoUserMainPage() {
   const { showLoginModal, openLoginModal, closeLoginModal } = useUserStore();
@@ -65,9 +65,7 @@ export default function NoUserMainPage() {
     <S.Main>
       <S.SpotListContainer ref={spotListContainerRef}>
         {isLoading ? (
-          <S.LoaderContainer>
-            <BounceLoader color="#0087CA" loading={isLoading} size={60} />
-          </S.LoaderContainer>
+          <Loading isLoading={isLoading} />
         ) : (
           <>
             <S.TitleContainer>

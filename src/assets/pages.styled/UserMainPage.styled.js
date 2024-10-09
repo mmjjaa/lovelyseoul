@@ -1,7 +1,6 @@
 import styled from "styled-components";
 import media from "../../utils/media";
 
-
 export const Main = styled.div`
   display: flex;
   width: 100%;
@@ -64,11 +63,4 @@ export const UserMainSubtitle = styled(UserMainText).attrs({ as: "p" })`
   ${media("phone")`
   font-size: 0.9rem; 
 `}
-`;
-
-export const LoaderContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
 `;
