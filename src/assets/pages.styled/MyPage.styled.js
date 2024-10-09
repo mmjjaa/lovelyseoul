@@ -29,6 +29,11 @@ export const SpotListContainer = styled.div`
     flex-grow: 1;
   `}
 `;
+export const TitleContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
 export const MypageText = styled.h2`
   padding: 0 1rem;
 `;
@@ -75,4 +80,15 @@ export const EmptyMessage = styled.div`
   ${media("tablet")`
     padding-top: 150px;
   `}
+`;
+export const button = styled.button`
+  background-color: rgba(251, 159, 54, 0.7);
+  color: white;
+  width: 100px;
+  border-radius: 5px;
+  margin: 1rem;
+  padding: 0.5rem;
+  &:hover {
+    background-color: rgba(251, 159, 54, 1);
+  }
 `;
