@@ -67,10 +67,3 @@ export const UserMainSubtitle = styled(UserMainText).attrs({ as: "p" })`
   font-size: 0.9rem; 
 `}
 `;
-
-export const LoaderContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100%;
-`;
