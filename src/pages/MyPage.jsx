@@ -5,14 +5,20 @@ import * as S from "../assets/pages.styled/MyPage.styled";
 
 export default function MyPage() {
   const { userInfo, favoriteSpots } = useUserStore();
+  const handleGoBack = () => {
+    window.history.back();
+  };
 
   return (
     <S.Main>
       <S.SpotListContainer>
-        <S.MypageTitle>
-          <strong>{userInfo?.name}님이 </strong>
-          찜한 목록이에요!
-        </S.MypageTitle>
+        <S.TitleContainer>
+          <S.MypageTitle>
+            <strong>{userInfo?.name}님이 </strong>
+            찜한 목록이에요!
+          </S.MypageTitle>
+          <S.button onClick={handleGoBack}>메인으로</S.button>
+        </S.TitleContainer>
         <S.MypageSubtitle>
           저희가 한눈에 보실 수 있도록 모아봤어요!
         </S.MypageSubtitle>
