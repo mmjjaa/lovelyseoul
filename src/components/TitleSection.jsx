@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import * as S from "../assets/pages.styled/UserMainPage.styled";
-import CurrentLocationBtn from "../components/CurrentLocationBtn";
-import CulturalEventsBtn from "../components/CulturalEventsBtn";
+import CurrentLocationBtn from "./MainPageBtn/CurrentLocationBtn";
+import CulturalEventsBtn from "./MainPageBtn/CulturalEventsBtn";
 export default function TitleSection({
   isOpen,
   spotName,
