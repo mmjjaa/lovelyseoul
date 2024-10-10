@@ -116,13 +116,20 @@ export default function UserMain() {
             )}
 
             {hotPlaces.map((place, index) => (
-              <SpotList
-                key={index}
-                place={place[0]}
-                hotPlaces={hotPlaces}
-                isOpen={false}
-                setAccordionState={setAccordionState}
-              />
+              <>
+                <S.PopularText className="font-weight-regular ">
+                  {userInfo.age}대 비율이
+                  <strong> {place[0][`PPLTN_RATE_${userInfo.age}`]}%</strong>
+                  입니다.
+                </S.PopularText>
+                <SpotList
+                  key={index}
+                  place={place[0]}
+                  hotPlaces={hotPlaces}
+                  isOpen={false}
+                  setAccordionState={setAccordionState}
+                />
+              </>
             ))}
           </>
         )}
