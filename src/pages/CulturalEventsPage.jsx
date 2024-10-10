@@ -1,6 +1,6 @@
 import KakaoMap from "../layout/KakaoMap";
-import CurrentLocationBtn from "../components/CurrentLocationBtn";
-import CulturalEventsBtn from "../components/CulturalEventsBtn";
+import CurrentLocationBtn from "../components/MainPageBtn/CurrentLocationBtn";
+import CulturalEventsBtn from "../components/MainPageBtn/CulturalEventsBtn";
 import CultureList from "../components/CultureList";
 import useSpotListStore from "../store/spotListStore";
 import { checkKorean } from "../utils/checkKorean";

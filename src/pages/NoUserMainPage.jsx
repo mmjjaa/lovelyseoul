@@ -5,24 +5,21 @@ import KakaoMap from "../layout/KakaoMap";
 import UseFetchPeopleData from "../hooks/useFetchPeopleData";
 import useSpotListStore from "../store/spotListStore";
 import usePlaceMarkerStore from "../store/clickPlaceMarkerStore";
-import { checkKorean } from "../utils/checkKorean";
 import useUserStore from "../store/userStore";
 import * as S from "../assets/pages.styled/NoUserMainPage.styled";
-import { handleSelectedMarker, scrollToFirstList } from "../utils/spotUtils";
+import { useSelectedMarker } from "../hooks/useSelectedMarker";
+import { useScrollToFirstList } from "../hooks/useScroll";
 import Loading from "../components/Loading";
 import TitleSection from "../components/TitleSection";
+import { useOpenSpotInfo } from "../hooks/useOpenSpotInfo";
+
 export default function NoUserMainPage() {
   const { showLoginModal, openLoginModal, closeLoginModal } = useUserStore();
   const { placesData, isLoading } = UseFetchPeopleData();
   const [hotPlaces, setHotPlaces] = useState([]);
   const { clickedMarkerName } = usePlaceMarkerStore();
   const { accordionStates, setAccordionState } = useSpotListStore();
-  const openSpotNames = Object.keys(accordionStates).filter(
-    (key) => accordionStates[key]
-  );
-  const spotName = openSpotNames[0];
-  const isOpen = openSpotNames.length > 0;
-  const postposition = checkKorean(spotName);
+  const { spotName, isOpen, postposition } = useOpenSpotInfo(accordionStates);
 
   const selectedPlace = placesData.find(
     (place) => place[0]?.AREA_NM === clickedMarkerName
@@ -39,25 +36,23 @@ export default function NoUserMainPage() {
     }
   }, [isLoading, placesData]);
 
-  /* 선택된 마커와 일치하는 장소 찾기*/
-  useEffect(() => {
-    handleSelectedMarker(
-      clickedMarkerName,
-      selectedPlace,
-      accordionStates,
-      setAccordionState
-    );
-  }, [clickedMarkerName, placesData, setAccordionState, selectedPlace]);
+  /* 선택된 마커와 일치하는 장소 찾기 */
+  useSelectedMarker(
+    clickedMarkerName,
+    selectedPlace,
+    accordionStates,
+    setAccordionState
+  );
 
-  /*선택된 장소 있을 때 첫 번째 리스트로 스크롤*/
-  useEffect(() => {
-    scrollToFirstList(
-      spotListContainerRef,
-      hotPlaces,
-      selectedPlace,
-      setAccordionState
-    );
-  }, [selectedPlace, hotPlaces, setAccordionState]);
+  /* 선택된 장소 있을 때 첫 번째 리스트로 스크롤 */
+  useScrollToFirstList(
+    spotListContainerRef,
+    hotPlaces,
+    selectedPlace,
+    accordionStates,
+    setAccordionState
+  );
+
   return (
     <S.Main>
       <S.SpotListContainer ref={spotListContainerRef}>
