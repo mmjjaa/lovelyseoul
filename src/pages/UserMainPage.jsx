@@ -1,8 +1,5 @@
 import SpotList from "../components/SpotList";
 import KakaoMap from "../layout/KakaoMap";
-import CurrentLocationBtn from "../components/CurrentLocationBtn";
-import CulturalEventsBtn from "../components/CulturalEventsBtn";
-import { Link } from "react-router-dom";
 import useUserStore from "../store/userStore";
 import UseFetchPeopleData from "../hooks/useFetchPeopleData";
 import { useState, useEffect, useRef } from "react";
@@ -12,6 +9,7 @@ import { checkKorean } from "../utils/checkKorean";
 import * as S from "../assets/pages.styled/UserMainPage.styled";
 import { handleSelectedMarker, scrollToFirstList } from "../utils/spotUtils";
 import Loading from "../components/Loading";
+import TitleSection from "../components/TitleSection";
 
 export default function UserMain() {
   const { userInfo } = useUserStore();
@@ -75,36 +73,12 @@ export default function UserMain() {
         ) : (
           <>
             <S.TitleContainer>
-              {isOpen ? (
-                <>
-                  <S.UserMainTitle>
-                    <strong>{spotName}</strong>
-                    {postposition} 지금!
-                  </S.UserMainTitle>
-                  <S.UserMainSubtitle>
-                    가장 한산한 시간대를 확인해보세요!
-                  </S.UserMainSubtitle>
-                  <S.BtnCon>
-                    <Link>
-                      <CurrentLocationBtn />
-                    </Link>
-                    <Link to="/culturaleventspage">
-                      <CulturalEventsBtn />
-                    </Link>
-                  </S.BtnCon>
-                </>
-              ) : (
-                <>
-                  <S.UserMainTitle>
-                    {userInfo.name}님! 현재 {userInfo.age}대에게
-                    <strong> 인기가 많은 </strong>
-                    곳이에요!
-                  </S.UserMainTitle>
-                  <S.UserMainSubtitle>
-                    저희가 한눈에 보실 수 있도록 모아봤어요!
-                  </S.UserMainSubtitle>
-                </>
-              )}
+              <TitleSection
+                isOpen={isOpen}
+                spotName={spotName}
+                postposition={postposition}
+                userInfo={userInfo}
+              />
             </S.TitleContainer>
             {selectedPlace && selectedPlace[0] && (
               <SpotList

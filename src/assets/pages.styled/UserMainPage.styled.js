@@ -16,6 +16,7 @@ export const SpotListContainer = styled.div`
   flex-direction: column;
   width: 40%;
   max-width: 40%;
+  margin: 1rem;
   overflow-y: auto;
   &::-webkit-scrollbar {
     display: none;
@@ -70,4 +71,5 @@ export const UserMainSubtitle = styled(UserMainText).attrs({ as: "p" })`
 
 export const PopularText = styled.p`
   margin: 1rem 1rem 0 1rem;
+  padding: 0 1rem;
 `;
