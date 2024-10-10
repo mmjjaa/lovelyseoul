@@ -2,9 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import SpotList from "../components/SpotList";
 import LoginModal from "../components/LoginModal";
 import KakaoMap from "../layout/KakaoMap";
-import CurrentLocationBtn from "../components/CurrentLocationBtn";
-import CulturalEventsBtn from "../components/CulturalEventsBtn";
-import { Link } from "react-router-dom";
 import UseFetchPeopleData from "../hooks/useFetchPeopleData";
 import useSpotListStore from "../store/spotListStore";
 import usePlaceMarkerStore from "../store/clickPlaceMarkerStore";
@@ -13,7 +10,7 @@ import useUserStore from "../store/userStore";
 import * as S from "../assets/pages.styled/NoUserMainPage.styled";
 import { handleSelectedMarker, scrollToFirstList } from "../utils/spotUtils";
 import Loading from "../components/Loading";
-
+import TitleSection from "../components/TitleSection";
 export default function NoUserMainPage() {
   const { showLoginModal, openLoginModal, closeLoginModal } = useUserStore();
   const { placesData, isLoading } = UseFetchPeopleData();
@@ -69,36 +66,11 @@ export default function NoUserMainPage() {
         ) : (
           <>
             <S.TitleContainer>
-              {isOpen ? (
-                <>
-                  <S.NoUserMainTitle>
-                    <strong>{spotName}</strong>
-                    {postposition} 지금!
-                  </S.NoUserMainTitle>
-                  <S.NoUserMainSubtitle>
-                    가장 한산한 시간대를 확인해보세요!
-                  </S.NoUserMainSubtitle>
-                  <S.BtnCon>
-                    <Link>
-                      <CurrentLocationBtn />
-                    </Link>
-                    <Link to="/culturaleventspage">
-                      <CulturalEventsBtn />
-                    </Link>
-                  </S.BtnCon>
-                </>
-              ) : (
-                <>
-                  <S.NoUserMainTitle>
-                    현재 가장
-                    <strong> 인기가 많은 </strong>
-                    곳이에요!
-                  </S.NoUserMainTitle>
-                  <S.NoUserMainSubtitle>
-                    저희가 한눈에 보실 수 있도록 모아봤어요!
-                  </S.NoUserMainSubtitle>
-                </>
-              )}
+              <TitleSection
+                isOpen={isOpen}
+                spotName={spotName}
+                postposition={postposition}
+              />
             </S.TitleContainer>
             {selectedPlace && selectedPlace[0] && (
               <SpotList

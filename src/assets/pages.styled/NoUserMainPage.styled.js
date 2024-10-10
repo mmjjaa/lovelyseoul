@@ -19,6 +19,9 @@ export const SpotListContainer = styled.div`
   max-width: 40%;
   margin: 1rem;
   overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
   ${media("tablet")`
     width: 100%;
     max-width: 100%;
@@ -42,25 +45,4 @@ export const BtnCon = styled.div`
     padding: 0.5rem; 
     flex-direction: column; 
   `}
-`;
-export const NoUserMainText = styled.div`
-  padding: 0 1rem;
-`;
-export const NoUserMainTitle = styled(NoUserMainText).attrs({ as: "h2" })`
-  ${media("tablet")`
-    font-size: 1.4rem; 
-  `}
-
-  ${media("phone")`
-    font-size: 1.2rem; 
-  `}
-`;
-export const NoUserMainSubtitle = styled(NoUserMainText).attrs({ as: "p" })`
-  ${media("tablet")`
-  font-size: 1rem; 
-`}
-
-  ${media("phone")`
-  font-size: 0.9rem; 
-`}
 `;
