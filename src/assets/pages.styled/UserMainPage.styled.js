@@ -67,3 +67,7 @@ export const UserMainSubtitle = styled(UserMainText).attrs({ as: "p" })`
   font-size: 0.9rem; 
 `}
 `;
+
+export const PopularText = styled.p`
+  margin: 1rem 1rem 0 1rem;
+`;
