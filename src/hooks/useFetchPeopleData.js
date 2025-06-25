@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import pLimit from "p-limit";
 
 export default function UseFetchPeopleData() {
   const [placesData, setPlacesData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const API_KEY = import.meta.env.VITE_APP_SEOUL_KEY;
 
   const places = [];
   for (let i = 1; i <= 116; i++) {
@@ -11,26 +11,31 @@ export default function UseFetchPeopleData() {
   }
 
   useEffect(() => {
-    const fetchPopulationData = async (place) => {
-      const res = await fetch(
-        `http://openapi.seoul.go.kr:8088/${API_KEY}/json/citydata_ppltn/1/5/${place}`
-      );
-      if (!res.ok) {
-        throw new Error("error");
+    const fetchPeopleData = async (place) => {
+      try {
+        const res = await fetch(`/api/fetchPeopleData?place=${place}`);
+        if (!res.ok) return null;
+
+        const contentType = res.headers.get("content-type") || "";
+        if (!contentType.includes("application/json")) return null;
+
+        const json = await res.json();
+        return json;
+      } catch {
+        return null;
       }
-      const data = await res.json();
-      return data["SeoulRtd.citydata_ppltn"];
     };
 
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const allPlacesData = await Promise.all(
-          places.map(fetchPopulationData)
+        const limit = pLimit(20);
+        const limitedFetches = places.map((place) =>
+          limit(() => fetchPeopleData(place))
         );
-        setPlacesData(allPlacesData);
-      } catch (error) {
-        console.error("error", error);
+        const results = await Promise.all(limitedFetches);
+        const filtered = results.filter(Boolean);
+        setPlacesData(filtered);
       } finally {
         setIsLoading(false);
       }
